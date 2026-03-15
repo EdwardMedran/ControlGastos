@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Control de Gastos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6/dist/amazon-cognito-identity.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0d0f14; --surface: #13161e; --surface2: #1c2030;
+      --border: rgba(255,255,255,0.07); --border-hover: rgba(255,255,255,0.14);
+      --accent: #7c6dfa; --accent2: #5de4c0; --accent3: #ff7eb3;
+      --text: #eeedf0; --muted: #7a7a8e; --danger: #ff6b6b;
+      --font-display: 'Syne', sans-serif; --font-body: 'DM Sans', sans-serif;
+      --radius: 16px; --radius-sm: 10px;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); min-height: 100vh; overflow-x: hidden; }
+    body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse 60% 50% at 20% 20%, rgba(124,109,250,0.12) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 80% 80%, rgba(93,228,192,0.08) 0%, transparent 60%); pointer-events: none; z-index: 0; }
+
+    /* LOADER */
+    #global-loader { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; gap: 16px; }
+    .spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loader-text { font-size: 14px; color: var(--muted); }
+
+    /* SCREENS */
+    .screen { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 100; padding: 24px; }
+    .screen::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 60% at 30% 30%, rgba(124,109,250,0.18) 0%, transparent 55%), radial-gradient(ellipse 60% 50% at 75% 70%, rgba(93,228,192,0.1) 0%, transparent 55%); }
+    .auth-card { position: relative; z-index: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 48px 44px; width: 100%; max-width: 420px; box-shadow: 0 32px 80px rgba(0,0,0,0.5); }
+    .screen.active { display: flex; }
+
+    .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; }
+    .brand-icon { width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .brand h1 { font-family: var(--font-display); font-size: 20px; font-weight: 700; }
+    .brand h1 span { color: var(--accent); }
+    .brand p { font-size: 12px; color: var(--muted); }
+    .auth-title { font-family: var(--font-display); font-size: 28px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.5px; }
+    .auth-sub { font-size: 14px; color: var(--muted); margin-bottom: 32px; }
+
+    /* FIELDS */
+    .field { margin-bottom: 20px; }
+    .field label { display: block; font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+    .field input, .field select, .field textarea { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: var(--font-body); font-size: 15px; padding: 13px 16px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; appearance: none; }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,109,250,0.15); }
+    .field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%237a7a8e'%3E%3Cpath d='M5 7l5 5 5-5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 18px; padding-right: 40px; cursor: pointer; }
+    .field select option { background: #1c2030; }
+    .field textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+    .field input::placeholder, .field textarea::placeholder { color: var(--muted); opacity: 0.6; }
+    .field.error input, .field.error select, .field.error textarea { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(255,107,107,0.15); }
+    .field-error { font-size: 12px; color: var(--danger); margin-top: 6px; display: none; }
+    .field.error .field-error { display: block; }
+    .char-counter { font-size: 11px; color: var(--muted); text-align: right; margin-top: 4px; }
+
+    /* BUTTONS */
+    .btn-primary { width: 100%; background: linear-gradient(135deg, var(--accent), #9b8dff); color: #fff; border: none; border-radius: var(--radius-sm); padding: 15px 24px; font-family: var(--font-display); font-size: 16px; font-weight: 700; cursor: pointer; transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s; box-shadow: 0 4px 20px rgba(124,109,250,0.4); display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-submit { background: linear-gradient(135deg, var(--accent), #9b8dff); color: #fff; border: none; border-radius: var(--radius-sm); padding: 15px 36px; font-family: var(--font-display); font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 20px rgba(124,109,250,0.4); display: flex; align-items: center; gap: 10px; }
+    .btn-submit:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-clear { background: none; border: 1px solid var(--border); color: var(--muted); padding: 15px 24px; border-radius: var(--radius-sm); font-size: 15px; cursor: pointer; transition: all 0.2s; font-family: var(--font-body); }
+    .btn-clear:hover { border-color: var(--danger); color: var(--danger); }
+    .btn-logout { background: none; border: 1px solid var(--border); color: var(--muted); padding: 7px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; transition: all 0.2s; font-family: var(--font-body); }
+    .btn-logout:hover { border-color: var(--danger); color: var(--danger); }
+
+    .auth-error { background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.3); border-radius: 10px; padding: 12px 16px; font-size: 13px; color: var(--danger); margin-bottom: 20px; display: none; }
+    .auth-link { text-align: center; margin-top: 16px; font-size: 13px; color: var(--muted); }
+    .auth-link a { color: var(--accent2); text-decoration: none; font-weight: 500; cursor: pointer; }
+    .auth-link a:hover { text-decoration: underline; }
+    .pass-wrap { position: relative; }
+    .pass-wrap input { padding-right: 44px !important; }
+    .pass-eye { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--muted); padding: 4px; display: flex; align-items: center; transition: color 0.2s; }
+    .pass-eye:hover { color: var(--text); }
+
+    /* NAV */
+    #app { display: none; position: relative; z-index: 1; min-height: 100vh; }
+    .nav { position: sticky; top: 0; z-index: 50; background: rgba(13,15,20,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .nav-brand { display: flex; align-items: center; gap: 12px; }
+    .nav-icon { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .nav-brand h2 { font-family: var(--font-display); font-size: 18px; font-weight: 700; }
+    .nav-brand h2 span { color: var(--accent); }
+    .nav-right { display: flex; align-items: center; gap: 16px; }
+    .nav-user { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--muted); }
+    .nav-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--accent3), var(--accent)); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; }
+    .nav-links { display: flex; gap: 4px; }
+    .nav-link { padding: 7px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; background: none; color: var(--muted); transition: all 0.2s; font-family: var(--font-body); }
+    .nav-link.active { background: rgba(124,109,250,0.15); color: var(--accent); }
+    .nav-link:hover:not(.active) { color: var(--text); background: var(--surface); }
+
+    /* MAIN */
+    .main { max-width: 760px; margin: 0 auto; padding: 40px 24px 80px; }
+    .page-header { margin-bottom: 36px; }
+    .page-header h1 { font-family: var(--font-display); font-size: 36px; font-weight: 800; letter-spacing: -1px; margin-bottom: 6px; background: linear-gradient(135deg, var(--text) 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .page-header p { font-size: 15px; color: var(--muted); }
+
+    /* RESUMEN */
+    .resumen-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 32px; }
+    .resumen-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 18px 20px; }
+    .rc-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+    .rc-value { font-family: var(--font-display); font-size: 22px; font-weight: 800; color: var(--text); }
+    .rc-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    /* FORM */
+    .form-card { background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 36px; box-shadow: 0 16px 48px rgba(0,0,0,0.3); }
+    .section-title { font-family: var(--font-display); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+    .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .amount-wrap { position: relative; }
+    .amount-wrap .currency { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--accent2); font-weight: 600; font-size: 16px; pointer-events: none; }
+    .amount-wrap input { padding-left: 40px !important; font-size: 20px !important; font-weight: 600; }
+    .pay-toggle { display: flex; gap: 8px; flex-wrap: wrap; }
+    .pay-option { display: none; }
+    .pay-label { padding: 9px 16px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; color: var(--muted); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
+    .pay-option:checked + .pay-label { border-color: var(--accent); background: rgba(124,109,250,0.12); color: var(--accent); }
+    .submit-area { display: flex; align-items: center; justify-content: space-between; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); gap: 16px; flex-wrap: wrap; }
+
+    /* LISTA */
+    .recent-header { display: flex; align-items: center; justify-content: space-between; margin: 44px 0 20px; }
+    .recent-header h2 { font-family: var(--font-display); font-size: 20px; font-weight: 700; }
+    .recent-count { background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 13px; color: var(--muted); }
+    .empty-state { text-align: center; padding: 48px; background: var(--surface); border: 1px dashed var(--border); border-radius: 20px; color: var(--muted); }
+    .empty-icon { font-size: 40px; margin-bottom: 12px; }
+    .expense-list { display: flex; flex-direction: column; gap: 12px; }
+    .expense-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 22px; display: flex; align-items: center; gap: 16px; transition: border-color 0.2s, transform 0.2s; animation: slideIn 0.3s ease; }
+    .expense-item:hover { border-color: var(--border-hover); transform: translateX(4px); }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+    .expense-cat-dot { width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .expense-info { flex: 1; min-width: 0; }
+    .expense-title { font-weight: 500; font-size: 15px; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .expense-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .expense-date { font-size: 12px; color: var(--muted); }
+    .expense-amount { font-family: var(--font-display); font-size: 18px; font-weight: 700; flex-shrink: 0; }
+    .expense-delete { background: none; border: none; color: var(--muted); cursor: pointer; padding: 8px; border-radius: 8px; transition: all 0.2s; flex-shrink: 0; }
+    .expense-delete:hover { background: rgba(255,107,107,0.1); color: var(--danger); }
+    .cat-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; }
+    .cat-hormiga { background: rgba(255,126,179,0.15); color: #ff7eb3; }
+    .cat-combustible { background: rgba(255,209,102,0.15); color: #ffd166; }
+    .cat-salidas { background: rgba(93,228,192,0.15); color: #5de4c0; }
+    .cat-bebidas { background: rgba(124,109,250,0.15); color: #9b8dff; }
+    .cat-fijos { background: rgba(255,107,107,0.15); color: #ff6b6b; }
+    .cat-otro { background: rgba(122,122,142,0.15); color: #b0b0c0; }
+
+    .skeleton { background: linear-gradient(90deg, var(--surface2) 25%, var(--border) 50%, var(--surface2) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+    #toast { position: fixed; bottom: 32px; right: 32px; background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; padding: 16px 22px; font-size: 14px; color: var(--text); box-shadow: 0 16px 48px rgba(0,0,0,0.5); transform: translateY(100px); opacity: 0; transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 200; display: flex; align-items: center; gap: 12px; max-width: 340px; }
+    #toast.show { transform: translateY(0); opacity: 1; }
+    #toast.success { border-color: rgba(93,228,192,0.3); }
+    #toast.error   { border-color: rgba(255,107,107,0.3); }
+
+    @media (max-width: 600px) {
+      .nav { padding: 0 16px; } .main { padding: 24px 16px 60px; } .form-card { padding: 24px 20px; }
+      .grid-2 { grid-template-columns: 1fr; } .page-header h1 { font-size: 28px; }
+      .submit-area { flex-direction: column-reverse; } .btn-submit, .btn-clear { width: 100%; justify-content: center; }
+      .nav-links { display: none; } .resumen-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="global-loader">
+  <div class="spinner"></div>
+  <span class="loader-text">Verificando sesión...</span>
+</div>
+
+<!-- LOGIN -->
+<div id="login-screen" class="screen">
+  <div class="auth-card">
+    <div class="brand"><div class="brand-icon">💰</div><div><h1>Control de <span>Gastos</span></h1><p>Finanzas personales</p></div></div>
+    <h2 class="auth-title">Iniciar sesión</h2>
+    <p class="auth-sub">Accede con tu cuenta de Cognito</p>
+    <div class="auth-error" id="login-error"></div>
+    <div class="field" id="fl-email">
+      <label>Usuario</label>
+      <input type="text" id="login-email" placeholder="Nombre de usuario" onkeydown="if(event.key==='Enter')doLogin()" autocomplete="username" />
+      <span class="field-error">Ingresa tu usuario</span>
+    </div>
+    <div class="field" id="fl-pass">
+      <label>Contraseña</label>
+      <div class="pass-wrap">
+        <input type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" />
+        <button type="button" class="pass-eye" onclick="toggleEye('login-pass',this)" tabindex="-1"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+      </div>
+      <span class="field-error">Contraseña requerida</span>
+    </div>
+    <button class="btn-primary" id="btn-login" onclick="doLogin()">Iniciar sesión</button>
+  </div>
+</div>
+
+<!-- CAMBIAR CONTRASEÑA TEMPORAL -->
+<div id="newpass-screen" class="screen">
+  <div class="auth-card">
+    <div class="brand"><div class="brand-icon">💰</div><div><h1>Control de <span>Gastos</span></h1><p>Primer acceso</p></div></div>
+    <h2 class="auth-title">Crea tu contraseña</h2>
+    <p class="auth-sub">Tu cuenta fue creada con una contraseña temporal. Establece una contraseña permanente para continuar.</p>
+    <div class="auth-error" id="newpass-error"></div>
+    <div class="field" id="fnp-pass">
+      <label>Nueva contraseña</label>
+      <div class="pass-wrap">
+        <input type="password" id="new-pass" placeholder="Mínimo 8 caracteres" onkeydown="if(event.key==='Enter')doNewPassword()" />
+        <button type="button" class="pass-eye" onclick="toggleEye('new-pass',this)" tabindex="-1"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+      </div>
+      <span class="field-error">Mínimo 8 caracteres</span>
+    </div>
+    <div class="field" id="fnp-pass2">
+      <label>Confirmar contraseña</label>
+      <div class="pass-wrap">
+        <input type="password" id="new-pass2" placeholder="Repite la contraseña" onkeydown="if(event.key==='Enter')doNewPassword()" />
+        <button type="button" class="pass-eye" onclick="toggleEye('new-pass2',this)" tabindex="-1"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+      </div>
+      <span class="field-error">Las contraseñas no coinciden</span>
+    </div>
+    <button class="btn-primary" id="btn-newpass" onclick="doNewPassword()">Guardar contraseña</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <nav class="nav">
+    <div class="nav-brand"><div class="nav-icon">💰</div><h2>Control de <span>Gastos</span></h2></div>
+    <div class="nav-links">
+      <button class="nav-link active" id="nav-reg" onclick="showView('registrar')">Registrar</button>
+      <button class="nav-link"        id="nav-con" onclick="showView('consultar')">Consultar</button>
+    </div>
+    <div class="nav-right">
+      <div class="nav-user">
+        <div class="nav-avatar" id="user-avatar">U</div>
+        <span id="user-name">Usuario</span>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">Salir</button>
+    </div>
+  </nav>
+
+  <main class="main">
+
+    <!-- VISTA REGISTRAR -->
+    <div id="view-registrar">
+      <div class="page-header"><h1>Nuevo Gasto</h1><p>Registra un gasto de forma rápida y organizada</p></div>
+
+      <div class="resumen-grid">
+        <div class="resumen-card"><div class="rc-label">Total del mes</div><div class="rc-value" id="res-total">—</div><div class="rc-sub" id="res-mes">—</div></div>
+        <div class="resumen-card"><div class="rc-label">Cantidad gastos</div><div class="rc-value" id="res-cant">—</div><div class="rc-sub">este mes</div></div>
+        <div class="resumen-card"><div class="rc-label">Mayor categoría</div><div class="rc-value" id="res-top">—</div><div class="rc-sub" id="res-top-monto">—</div></div>
+      </div>
+
+      <div class="form-card">
+        <div class="section-title">Información general</div>
+        <div class="grid-2">
+          <div class="field" id="f-titulo">
+            <label>Título del gasto *</label>
+            <input type="text" id="titulo" placeholder="Ej: Almuerzo en el trabajo" maxlength="60" oninput="document.getElementById('cc-t').textContent=this.value.length" />
+            <div class="char-counter"><span id="cc-t">0</span>/60</div>
+            <span class="field-error">El título es requerido</span>
+          </div>
+          <div class="field" id="f-cat">
+            <label>Categoría *</label>
+            <select id="categoria">
+              <option value="" disabled selected>Seleccionar categoría</option>
+              <option value="hormiga">🐜 Gasto hormiga</option>
+              <option value="combustible">⛽ Combustible</option>
+              <option value="salidas">🎉 Salidas</option>
+              <option value="bebidas">🧃 Bebidas</option>
+              <option value="fijos">🏠 Gastos fijos del mes</option>
+              <option value="otro">📦 Otro</option>
+            </select>
+            <span class="field-error">Selecciona una categoría</span>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="field" id="f-monto">
+            <label>Monto *</label>
+            <div class="amount-wrap"><span class="currency">S/</span><input type="number" id="monto" placeholder="0.00" step="0.01" min="0" /></div>
+            <span class="field-error">Ingresa un monto válido</span>
+          </div>
+          <div class="field" id="f-fecha">
+            <label>Fecha del gasto *</label>
+            <input type="date" id="fecha" />
+            <span class="field-error">La fecha es requerida</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Método de pago</label>
+          <div class="pay-toggle">
+            <input type="radio" name="pago" id="p1" value="efectivo"        class="pay-option" checked /><label class="pay-label" for="p1">💵 Efectivo</label>
+            <input type="radio" name="pago" id="p2" value="tarjeta_debito"  class="pay-option" /><label class="pay-label" for="p2">💳 Débito</label>
+            <input type="radio" name="pago" id="p3" value="tarjeta_credito" class="pay-option" /><label class="pay-label" for="p3">🏦 Crédito</label>
+            <input type="radio" name="pago" id="p4" value="yape_plin"       class="pay-option" /><label class="pay-label" for="p4">📱 Yape/Plin</label>
+          </div>
+        </div>
+        <div class="section-title" style="margin-top:28px">Detalles adicionales</div>
+        <div class="field">
+          <label>Descripción</label>
+          <textarea id="descripcion" placeholder="Describe brevemente el gasto (opcional)..." maxlength="200" oninput="document.getElementById('cc-d').textContent=this.value.length"></textarea>
+          <div class="char-counter"><span id="cc-d">0</span>/200</div>
+        </div>
+        <div class="grid-2">
+          <div class="field"><label>Lugar / Establecimiento</label><input type="text" id="lugar" placeholder="Ej: Plaza Vea, Grifo Repsol..." maxlength="60" /></div>
+          <div class="field"><label>Etiqueta personal</label><input type="text" id="etiqueta" placeholder="Ej: viaje, cumpleaños..." maxlength="30" /></div>
+        </div>
+        <div class="submit-area">
+          <button class="btn-clear" onclick="clearForm()">Limpiar</button>
+          <button class="btn-submit" id="btn-save" onclick="saveGasto()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Guardar Gasto
+          </button>
+        </div>
+      </div>
+
+      <div class="recent-header">
+        <h2>Gastos de hoy</h2>
+        <span class="recent-count" id="recent-count">—</span>
+      </div>
+      <div id="gastos-list"><div class="empty-state"><div class="empty-icon">📋</div><p>Cargando...</p></div></div>
+    </div>
+
+    <!-- VISTA CONSULTAR -->
+    <div id="view-consultar" style="display:none">
+      <div class="page-header"><h1>Consultar Gastos</h1><p>Filtra tus gastos por mes y categoría</p></div>
+      <div class="form-card" style="margin-bottom:28px">
+        <div class="section-title">Filtros</div>
+        <div class="grid-2">
+          <div class="field"><label>Mes</label><input type="month" id="filtro-mes" onchange="consultarGastos()" /></div>
+          <div class="field">
+            <label>Categoría</label>
+            <select id="filtro-cat" onchange="consultarGastos()">
+              <option value="">Todas</option>
+              <option value="hormiga">🐜 Gasto hormiga</option>
+              <option value="combustible">⛽ Combustible</option>
+              <option value="salidas">🎉 Salidas</option>
+              <option value="bebidas">🧃 Bebidas</option>
+              <option value="fijos">🏠 Gastos fijos</option>
+              <option value="otro">📦 Otro</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div id="consulta-resumen" style="margin-bottom:20px"></div>
+      <div id="consulta-list"><div class="empty-state"><div class="empty-icon">🔍</div><p>Selecciona un mes para consultar.</p></div></div>
+    </div>
+
+  </main>
+</div>
+
+<div id="toast"><span id="ti">✅</span><span id="tm">—</span></div>
+
+<script>
+// ══════════════════════════════════════════
+//  ⚙️  EDITA ESTOS 3 VALORES
+// ══════════════════════════════════════════
+const CFG = {
+  POOL_ID:    "sa-east-1_psRbaBHIq",
+  CLIENT_ID:  "3e827bl97nbca7f7va8v58fo6l",
+  LAMBDA_URL: "https://muuar3mgb5lkgvpywkky2wx6qe0ywayv.lambda-url.sa-east-1.on.aws",
+};
+// ══════════════════════════════════════════
+
+const CAT = {
+  hormiga:     { e:'🐜', l:'Gasto hormiga',  c:'cat-hormiga'     },
+  combustible: { e:'⛽', l:'Combustible',     c:'cat-combustible' },
+  salidas:     { e:'🎉', l:'Salidas',         c:'cat-salidas'     },
+  bebidas:     { e:'🧃', l:'Bebidas',         c:'cat-bebidas'     },
+  fijos:       { e:'🏠', l:'Gastos fijos',    c:'cat-fijos'       },
+  otro:        { e:'📦', l:'Otro',            c:'cat-otro'        },
+};
+const PAY = { efectivo:'💵 Efectivo', tarjeta_debito:'💳 Débito', tarjeta_credito:'🏦 Crédito', yape_plin:'📱 Yape/Plin' };
+
+let cognitoUser = null, idToken = null, tokenExp = 0;
+const pool = new AmazonCognitoIdentity.CognitoUserPool({ UserPoolId: CFG.POOL_ID, ClientId: CFG.CLIENT_ID });
+
+// INIT
+window.addEventListener("load", () => {
+  const u = pool.getCurrentUser();
+  if (!u) return showScreen("login");
+  u.getSession((err, session) => {
+    try {
+      if (!err && session && session.isValid()) {
+        cognitoUser = u; setToken(session);
+        const p = session.getIdToken().decodePayload();
+        setUserUI(p.name || p.email || p["cognito:username"] || "Usuario");
+        showApp();
+      } else {
+        u.signOut();
+        showScreen("login");
+      }
+    } catch(e) {
+      console.error("Init error:", e);
+      showScreen("login");
+    }
+  });
+});
+
+function setToken(s) { idToken = s.getIdToken().getJwtToken(); tokenExp = s.getIdToken().getExpiration() * 1000; }
+
+function showScreen(name) {
+  document.getElementById("global-loader").style.display = "none";
+  document.getElementById("app").style.display = "none";
+  document.querySelectorAll(".screen").forEach(el => {
+    el.classList.remove("active");
+    el.style.display = "none";
+  });
+  if (name) {
+    const target = document.getElementById(name + "-screen");
+    target.style.display = "flex";
+    target.classList.add("active");
+  }
+}
+
+function showApp() {
+  document.getElementById("global-loader").style.display = "none";
+  document.querySelectorAll(".screen").forEach(el => {
+    el.classList.remove("active");
+    el.style.display = "none";
+  });
+  document.getElementById("app").style.display = "block";
+  document.getElementById("fecha").value = hoy();
+  cargarResumen(); cargarHoy();
+}
+
+function showView(v) {
+  document.getElementById("view-registrar").style.display = v === "registrar" ? "block" : "none";
+  document.getElementById("view-consultar").style.display = v === "consultar"  ? "block" : "none";
+  document.getElementById("nav-reg").classList.toggle("active", v === "registrar");
+  document.getElementById("nav-con").classList.toggle("active", v === "consultar");
+  if (v === "consultar") { document.getElementById("filtro-mes").value = hoy().substring(0,7); consultarGastos(); }
+}
+
+function setUserUI(n) { document.getElementById("user-name").textContent = n; document.getElementById("user-avatar").textContent = n.charAt(0).toUpperCase(); }
+
+// AUTH
+let cognitoUserPendingNewPass = null; // guardamos el usuario cuando Cognito pide cambio de clave
+
+function doLogin() {
+  const email = g("login-email"), pass = g("login-pass");
+  let ok = true;
+  clrErr(["fl-email","fl-pass"]); hide("login-error");
+  if (!email) { setErr("fl-email"); ok = false; }
+  if (!pass)  { setErr("fl-pass");  ok = false; }
+  if (!ok) return;
+  setBtn("btn-login", "Iniciando...", true);
+
+  // Timeout de seguridad: si en 15s no responde, resetea el botón
+  const loginTimeout = setTimeout(() => {
+    setBtn("btn-login", "Iniciar sesión", false);
+    showErr("login-error", "Tiempo de espera agotado. Intenta de nuevo.");
+  }, 15000);
+
+  const cu = new AmazonCognitoIdentity.CognitoUser({ Username: email, Pool: pool });
+  const authDetails = new AmazonCognitoIdentity.AuthenticationDetails({
+    Username: email,
+    Password: pass,
+    AuthFlow: "USER_PASSWORD_AUTH",
+  });
+  try {
+    cu.authenticateUser(authDetails, {
+      onSuccess(s) {
+        clearTimeout(loginTimeout);
+        try {
+          cognitoUser = cu; setToken(s);
+          const p = s.getIdToken().decodePayload();
+          setUserUI(p.name || p.email || p["cognito:username"] || "Usuario");
+          showApp();
+        } catch(ex) {
+          console.error("onSuccess error:", ex);
+          setBtn("btn-login", "Iniciar sesión", false);
+          showErr("login-error", "Error al cargar la sesión: " + ex.message);
+        }
+      },
+      onFailure(e) {
+        clearTimeout(loginTimeout);
+        setBtn("btn-login", "Iniciar sesión", false);
+        showErr("login-error", e.message || "Credenciales incorrectas");
+      },
+      newPasswordRequired(_userAttributes, _requiredAttributes) {
+        clearTimeout(loginTimeout);
+        setBtn("btn-login", "Iniciar sesión", false);
+        cognitoUserPendingNewPass = cu;
+        showScreen("newpass");
+      },
+    });
+  } catch(e) {
+    clearTimeout(loginTimeout);
+    setBtn("btn-login", "Iniciar sesión", false);
+    showErr("login-error", e.message || "Error inesperado");
+  }
+}
+
+function doNewPassword() {
+  // Leer SIN trim() para no cortar símbolos al final como el punto de "Pelusa112019."
+  const pass1 = document.getElementById("new-pass")?.value  || "";
+  const pass2 = document.getElementById("new-pass2")?.value || "";
+  let ok = true;
+  clrErr(["fnp-pass","fnp-pass2"]); hide("newpass-error");
+  if (!pass1 || pass1.length < 8) { setErr("fnp-pass");  ok = false; }
+  if (pass1 !== pass2)             { setErr("fnp-pass2"); ok = false; }
+  if (!ok) return;
+  if (!cognitoUserPendingNewPass) { showScreen("login"); return; }
+  setBtn("btn-newpass", "Guardando...", true);
+  cognitoUserPendingNewPass.completeNewPasswordChallenge(pass1, { name: cognitoUserPendingNewPass.username }, {
+    onSuccess(s) {
+      cognitoUser = cognitoUserPendingNewPass;
+      cognitoUserPendingNewPass = null;
+      setToken(s);
+      const p = s.getIdToken().decodePayload();
+      setUserUI(p.name || p.email || "Usuario");
+      showApp();
+    },
+    onFailure(e) {
+      setBtn("btn-newpass", "Guardar contraseña", false);
+      showErr("newpass-error", e.message || "Error al cambiar la contraseña");
+    },
+  });
+}
+
+function toggleEye(inputId, btn) {
+  const input = document.getElementById(inputId);
+  const showing = input.type === "text";
+  input.type = showing ? "password" : "text";
+  btn.innerHTML = showing
+    ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`
+    : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+  btn.style.color = showing ? "var(--muted)" : "var(--accent)";
+}
+
+function doLogout() {
+  if (cognitoUser) cognitoUser.signOut();
+  cognitoUser = null; idToken = null; tokenExp = 0;
+  Object.keys(localStorage).forEach(key => {
+    if (key.startsWith("CognitoIdentityServiceProvider")) localStorage.removeItem(key);
+  });
+  // Resetear botón de login por si quedó en estado "Iniciando..."
+  setBtn("btn-login", "Iniciar sesión", false);
+  document.getElementById("login-email").value = "";
+  document.getElementById("login-pass").value  = "";
+  showScreen("login");
+}
+
+async function getToken() {
+  if (idToken && Date.now() < tokenExp - 60000) return idToken;
+  return new Promise((res, rej) => { if (!cognitoUser) return rej("Sin sesión"); cognitoUser.getSession((e,s) => { if(e) return rej(e); setToken(s); res(idToken); }); });
+}
+
+// LAMBDA CALL
+async function lmb(path, method = "GET", body = null, qs = "") {
+  const token = await getToken();
+  const url = CFG.LAMBDA_URL + path + (qs ? "?" + qs : "");
+  const opts = { method, headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token } };
+  if (body) opts.body = JSON.stringify(body);
+  const res  = await fetch(url, opts);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Error " + res.status);
+  return data;
+}
+
+// SAVE
+async function saveGasto() {
+  const titulo = g("titulo"), categoria = g("categoria"), montoRaw = g("monto"), fecha = g("fecha");
+  let ok = true;
+  clrErr(["f-titulo","f-cat","f-monto","f-fecha"]);
+  if (!titulo)               { setErr("f-titulo"); ok = false; }
+  if (!categoria)            { setErr("f-cat");    ok = false; }
+  if (!montoRaw || +montoRaw <= 0) { setErr("f-monto"); ok = false; }
+  if (!fecha)                { setErr("f-fecha");  ok = false; }
+  if (!ok) { toast("Completa los campos requeridos", "error"); return; }
+
+  const btn = document.getElementById("btn-save");
+  btn.disabled = true; btn.innerHTML = "⏳ Guardando...";
+  try {
+    await lmb("/gastos", "POST", { titulo, categoria, monto: parseFloat(montoRaw), fecha, descripcion: g("descripcion"), lugar: g("lugar"), etiqueta: g("etiqueta"), metodoPago: document.querySelector("input[name='pago']:checked")?.value || "efectivo" });
+    clearForm(); toast("¡Gasto guardado en DynamoDB! ✅", "success"); cargarResumen(); cargarHoy();
+  } catch(e) { toast("Error: " + e.message, "error"); }
+  finally {
+    btn.disabled = false;
+    btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar Gasto`;
+  }
+}
+
+async function cargarHoy() {
+  const el = document.getElementById("gastos-list");
+  el.innerHTML = skels(3);
+  try { const d = await lmb("/gastos", "GET", null, "fecha=" + hoy()); renderLista(d.gastos || [], el, "recent-count"); }
+  catch(e) { el.innerHTML = empty("⚠️", e.message); }
+}
+
+async function cargarResumen() {
+  const mes = hoy().substring(0,7);
+  try {
+    const d = await lmb("/gastos/resumen", "GET", null, "mes=" + mes);
+    document.getElementById("res-total").textContent = "S/ " + (d.totalGeneral || 0).toFixed(2);
+    document.getElementById("res-cant").textContent  = d.cantidadGastos || 0;
+    document.getElementById("res-mes").textContent   = fmtMes(mes);
+    const top = Object.entries(d.porCategoria || {}).sort((a,b) => b[1].total - a[1].total)[0];
+    if (top) { document.getElementById("res-top").textContent = (CAT[top[0]]?.e||"📦")+" "+(CAT[top[0]]?.l||top[0]); document.getElementById("res-top-monto").textContent = "S/ " + top[1].total.toFixed(2); }
+  } catch(e) { console.warn("Resumen:", e.message); }
+}
+
+async function consultarGastos() {
+  const mes = document.getElementById("filtro-mes").value;
+  const cat = document.getElementById("filtro-cat").value;
+  if (!mes) return;
+  const listEl = document.getElementById("consulta-list"), resEl = document.getElementById("consulta-resumen");
+  listEl.innerHTML = skels(5);
+  let qs = "mes=" + mes; if (cat) qs += "&categoria=" + cat;
+  try {
+    const data = await lmb("/gastos", "GET", null, qs);
+    const gastos = data.gastos || [];
+    const total  = gastos.reduce((s,g) => s + parseFloat(g.monto||0), 0);
+    resEl.innerHTML = `<div class="form-card" style="padding:16px 20px;margin-bottom:0;display:flex;gap:24px;align-items:center;flex-wrap:wrap"><span style="font-size:13px;color:var(--muted)">${fmtMes(mes)}</span><span style="font-family:var(--font-display);font-size:18px;font-weight:700">S/ ${total.toFixed(2)}</span><span style="font-size:13px;color:var(--muted)">${gastos.length} gasto${gastos.length!==1?"s":""}</span></div>`;
+    renderLista(gastos, listEl, null);
+  } catch(e) { listEl.innerHTML = empty("⚠️", e.message); }
+}
+
+async function deleteGasto(gastoId) {
+  if (!confirm("¿Eliminar este gasto?")) return;
+  try { await lmb("/gastos/" + encodeURIComponent(gastoId), "DELETE"); toast("Gasto eliminado", "error"); cargarResumen(); cargarHoy(); }
+  catch(e) { toast("Error: " + e.message, "error"); }
+}
+
+function renderLista(gastos, el, countId) {
+  if (countId) document.getElementById(countId).textContent = gastos.length + " gasto" + (gastos.length!==1?"s":"");
+  if (!gastos.length) { el.innerHTML = empty("📋", "Sin gastos para este período."); return; }
+  el.innerHTML = `<div class="expense-list">${gastos.map(cardHTML).join("")}</div>`;
+}
+
+function cardHTML(g) {
+  const cat  = CAT[g.categoria] || CAT.otro;
+  const desc = g.descripcion ? `<span style="font-size:12px;color:var(--muted);display:block;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:320px">${esc(g.descripcion)}</span>` : "";
+  const lugar = g.lugar ? `<span class="expense-date">📍 ${esc(g.lugar)}</span>` : "";
+  return `<div class="expense-item">
+    <div class="expense-cat-dot">${cat.e}</div>
+    <div class="expense-info">
+      <div class="expense-title">${esc(g.titulo)}</div>
+      <div class="expense-meta"><span class="cat-pill ${cat.c}">${cat.l}</span><span class="expense-date">📅 ${fmtFecha(g.fecha)}</span><span class="expense-date">${PAY[g.metodoPago]||""}</span>${lugar}</div>
+      ${desc}
+    </div>
+    <div class="expense-amount">S/ ${parseFloat(g.monto).toFixed(2)}</div>
+    <button class="expense-delete" onclick="deleteGasto('${g.gastoId}')" title="Eliminar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+    </button>
+  </div>`;
+}
+
+// UTILS
+const g      = id => document.getElementById(id)?.value?.trim() || "";
+const hoy    = ()  => new Date().toISOString().split("T")[0];
+const esc    = s   => (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const setErr = id  => document.getElementById(id)?.classList.add("error");
+const clrErr = ids => ids.forEach(id => document.getElementById(id)?.classList.remove("error"));
+const hide   = id  => { const el=document.getElementById(id); if(el) el.style.display="none"; };
+const showErr = (id,msg) => { const el=document.getElementById(id); if(el){el.textContent=msg; el.style.display="block";} };
+const setBtn  = (id,txt,dis) => { const b=document.getElementById(id); b.disabled=dis; b.textContent=txt; };
+const empty   = (icon,msg) => `<div class="empty-state"><div class="empty-icon">${icon}</div><p>${msg}</p></div>`;
+const skels   = n => Array.from({length:n},()=>`<div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px 22px;display:flex;align-items:center;gap:16px;margin-bottom:12px"><div class="skeleton" style="width:44px;height:44px;border-radius:12px;flex-shrink:0"></div><div style="flex:1"><div class="skeleton" style="height:16px;width:60%;margin-bottom:8px"></div><div class="skeleton" style="height:12px;width:40%"></div></div><div class="skeleton" style="height:20px;width:64px"></div></div>`).join("");
+
+function clearForm() {
+  ["titulo","monto","descripcion","lugar","etiqueta"].forEach(id=>{const el=document.getElementById(id);if(el)el.value="";});
+  document.getElementById("categoria").value=""; document.getElementById("p1").checked=true;
+  document.getElementById("fecha").value=hoy();
+  ["cc-t","cc-d"].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent="0";});
+  clrErr(["f-titulo","f-cat","f-monto","f-fecha"]);
+}
+
+function fmtFecha(d) { if(!d)return""; const[y,m,day]=d.split("-"); const ms=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"]; return `${parseInt(day)} ${ms[parseInt(m)-1]} ${y}`; }
+function fmtMes(ym)  { const[y,m]=ym.split("-"); const ms=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"]; return `${ms[parseInt(m)-1]} ${y}`; }
+
+let toastT;
+function toast(msg, type="success") {
+  const t=document.getElementById("toast"); document.getElementById("ti").textContent=type==="success"?"✅":"❌"; document.getElementById("tm").textContent=msg; t.className="show "+type; clearTimeout(toastT); toastT=setTimeout(()=>t.className="",3200);
+}
+</script>
+</body>
+</html>
