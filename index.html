@@ -289,6 +289,11 @@
     <h2 class="auth-title">Crea tu contraseña</h2>
     <p class="auth-sub">Tu cuenta fue creada con una contraseña temporal. Establece una contraseña permanente para continuar.</p>
     <div class="auth-error" id="newpass-error"></div>
+    <div class="field" id="fnp-email">
+      <label>Correo electrónico</label>
+      <input type="email" id="new-email" placeholder="tu@correo.com" />
+      <span class="field-error">Correo requerido</span>
+    </div>
     <div class="field" id="fnp-pass">
       <label>Nueva contraseña</label>
       <div class="pass-wrap">
@@ -716,18 +721,20 @@ function doLogin() {
 }
 
 function doNewPassword() {
+  const email = document.getElementById("new-email")?.value.trim() || "";
   const pass1 = document.getElementById("new-pass")?.value  || "";
   const pass2 = document.getElementById("new-pass2")?.value || "";
   let ok = true;
-  clrErr(["fnp-pass","fnp-pass2"]); hide("newpass-error");
+  clrErr(["fnp-email","fnp-pass","fnp-pass2"]); hide("newpass-error");
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setErr("fnp-email"); ok = false; }
   if (!pass1 || pass1.length < 8) { setErr("fnp-pass");  ok = false; }
   if (pass1 !== pass2)             { setErr("fnp-pass2"); ok = false; }
   if (!ok) return;
   if (!cognitoUserPendingNewPass) { showScreen("login"); return; }
   setBtn("btn-newpass", "Guardando...", true);
 
-  // Cognito requiere los atributos obligatorios — enviamos name con el username
-  const requiredAttribs = { name: cognitoUserPendingNewPass.getUsername() };
+  const username = cognitoUserPendingNewPass.getUsername();
+  const requiredAttribs = { name: username, email: email };
 
   cognitoUserPendingNewPass.completeNewPasswordChallenge(pass1, requiredAttribs, {
     onSuccess(s) {
