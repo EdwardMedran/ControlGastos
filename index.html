@@ -175,9 +175,10 @@
     .est-top-amount { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--text); }
 
     /* BOTTOM NAV MÓVIL */
-    .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; background: rgba(15,17,23,0.96); backdrop-filter: blur(20px); border-top: 1px solid rgba(249,115,22,0.12); height: 72px; padding: 0 8px; padding-bottom: env(safe-area-inset-bottom); }
-    .bottom-nav-inner { display: flex; height: 100%; align-items: center; justify-content: center; gap: 24px; }
-    .bottom-nav-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 32px; border: none; background: none; color: var(--muted); font-family: var(--font-body); font-size: 11px; font-weight: 500; cursor: pointer; border-radius: 12px; transition: all 0.2s; }
+    .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; background: rgba(15,17,23,0.96); backdrop-filter: blur(20px); border-top: 1px solid rgba(249,115,22,0.12); height: 72px; padding-bottom: env(safe-area-inset-bottom); }
+    .bottom-nav-inner { display: flex; height: 100%; align-items: stretch; justify-content: center; }
+    .bottom-nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 0; border: none; background: none; color: var(--muted); font-family: var(--font-body); font-size: 11px; font-weight: 500; cursor: pointer; transition: all 0.2s; flex: 1; height: 100%; -webkit-tap-highlight-color: rgba(249,115,22,0.15); user-select: none; -webkit-user-select: none; }
+    .bottom-nav-btn * { pointer-events: none; }
     .bottom-nav-btn svg { width: 22px; height: 22px; }
     .bottom-nav-btn.active { color: var(--accent); background: rgba(249,115,22,0.1); }
 
@@ -337,17 +338,17 @@
 
   <nav class="bottom-nav" id="bottom-nav">
     <div class="bottom-nav-inner">
-      <button class="bottom-nav-btn active" id="bnav-reg" onclick="showView('registrar')">
+      <button class="bottom-nav-btn active" id="bnav-reg">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-        Registrar
+        <span>Registrar</span>
       </button>
-      <button class="bottom-nav-btn" id="bnav-con" onclick="showView('consultar')">
+      <button class="bottom-nav-btn" id="bnav-con">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        Consultar
+        <span>Consultar</span>
       </button>
-      <button class="bottom-nav-btn" id="bnav-est" onclick="showView('estadisticas')">
+      <button class="bottom-nav-btn" id="bnav-est">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-        Estadísticas
+        <span>Estadísticas</span>
       </button>
     </div>
   </nav>
@@ -794,7 +795,22 @@ async function getToken() {
   return new Promise((res, rej) => { if (!cognitoUser) return rej("Sin sesión"); cognitoUser.getSession((e,s) => { if(e) return rej(e); setToken(s); res(idToken); }); });
 }
 
-// ── TIMER DE SESIÓN: 5 minutos de inactividad → logout automático ──
+// ── BOTTOM NAV — touch + click para máxima respuesta en móvil ──
+function initBottomNav() {
+  const navMap = { 'bnav-reg': 'registrar', 'bnav-con': 'consultar', 'bnav-est': 'estadisticas' };
+  Object.entries(navMap).forEach(([id, view]) => {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    // touchstart para respuesta inmediata en móvil
+    btn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      showView(view);
+    }, { passive: false });
+    // click como fallback para escritorio
+    btn.addEventListener('click', () => showView(view));
+  });
+}
+window.addEventListener('load', initBottomNav);
 let sessionTimer = null;
 const SESSION_TIMEOUT = 5 * 60 * 1000; // 5 minutos en ms
 
