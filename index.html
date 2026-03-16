@@ -155,6 +155,22 @@
     .skeleton { background: linear-gradient(90deg, var(--surface2) 25%, var(--border) 50%, var(--surface2) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
     @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
+    /* ESTADÍSTICAS */
+    .est-kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .est-kpi-card { background: var(--surface); border: 1px solid rgba(249,115,22,0.1); border-radius: 16px; padding: 16px 18px; }
+    .est-bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .est-bar-label { font-size: 13px; color: var(--text); min-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .est-bar-track { flex: 1; height: 8px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+    .est-bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s cubic-bezier(0.4,0,0.2,1); }
+    .est-bar-val { font-size: 13px; font-weight: 600; color: var(--text); min-width: 64px; text-align: right; }
+    .est-top-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+    .est-top-item:last-child { border-bottom: none; }
+    .est-top-num { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--accent); min-width: 20px; }
+    .est-top-info { flex: 1; min-width: 0; }
+    .est-top-title { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .est-top-sub { font-size: 12px; color: var(--muted); }
+    .est-top-amount { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--text); }
+
     /* BOTTOM NAV MÓVIL */
     .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; background: rgba(15,17,23,0.96); backdrop-filter: blur(20px); border-top: 1px solid rgba(249,115,22,0.12); height: 72px; padding: 0 8px; padding-bottom: env(safe-area-inset-bottom); }
     .bottom-nav-inner { display: flex; height: 100%; align-items: center; justify-content: center; gap: 24px; }
@@ -227,7 +243,10 @@
       .expense-amount { font-size: 16px; }
       .expense-title { font-size: 14px; }
 
-      /* TOAST CENTRADO */
+      /* ESTADÍSTICAS MÓVIL */
+      .est-kpis { grid-template-columns: 1fr 1fr; }
+      .est-bar-label { min-width: 90px; font-size: 12px; }
+      .est-bar-val { min-width: 54px; font-size: 12px; }
       #toast { left: 16px; right: 16px; bottom: 90px; max-width: 100%; }
     }
   </style>
@@ -297,6 +316,7 @@
     <div class="nav-links">
       <button class="nav-link active" id="nav-reg" onclick="showView('registrar')">Registrar</button>
       <button class="nav-link"        id="nav-con" onclick="showView('consultar')">Consultar</button>
+      <button class="nav-link"        id="nav-est" onclick="showView('estadisticas')">Estadísticas</button>
     </div>
     <div class="nav-right">
       <div class="nav-user">
@@ -316,6 +336,10 @@
       <button class="bottom-nav-btn" id="bnav-con" onclick="showView('consultar')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         Consultar
+      </button>
+      <button class="bottom-nav-btn" id="bnav-est" onclick="showView('estadisticas')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Estadísticas
       </button>
     </div>
   </nav>
@@ -434,12 +458,86 @@
       <div id="consulta-list"><div class="empty-state"><div class="empty-icon">🔍</div><p>Selecciona un mes o día para consultar.</p></div></div>
     </div>
 
+    <!-- VISTA ESTADÍSTICAS -->
+    <div id="view-estadisticas" style="display:none">
+      <div class="page-header"><h1>Estadísticas</h1><p>Análisis de tus gastos por mes</p></div>
+
+      <!-- Selector de mes -->
+      <div class="form-card" style="margin-bottom:24px;padding:20px 24px">
+        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+          <button onclick="cambiarMesEst(-1)" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);width:36px;height:36px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center">‹</button>
+          <span id="est-mes-label" style="font-family:var(--font-display);font-size:18px;font-weight:700;flex:1;text-align:center"></span>
+          <button onclick="cambiarMesEst(1)" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);width:36px;height:36px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center">›</button>
+        </div>
+      </div>
+
+      <!-- KPIs del mes -->
+      <div class="est-kpis" id="est-kpis">
+        <div class="est-kpi-card"><div class="rc-label">Total gastado</div><div class="rc-value" id="est-total">—</div></div>
+        <div class="est-kpi-card"><div class="rc-label">Nº de gastos</div><div class="rc-value" id="est-count">—</div></div>
+        <div class="est-kpi-card"><div class="rc-label">Promedio por gasto</div><div class="rc-value" id="est-avg">—</div></div>
+        <div class="est-kpi-card"><div class="rc-label">Gasto más alto</div><div class="rc-value" id="est-max">—</div><div class="rc-sub" id="est-max-label">—</div></div>
+      </div>
+
+      <!-- Barras por categoría -->
+      <div class="form-card" style="margin-bottom:20px">
+        <div class="section-title">Por categoría</div>
+        <div id="est-categorias"><div class="empty-state" style="padding:24px"><p>Sin datos</p></div></div>
+      </div>
+
+      <!-- Barras por día de la semana -->
+      <div class="form-card" style="margin-bottom:20px">
+        <div class="section-title">Por día de la semana</div>
+        <div id="est-dias"><div class="empty-state" style="padding:24px"><p>Sin datos</p></div></div>
+      </div>
+
+      <!-- Método de pago -->
+      <div class="form-card" style="margin-bottom:20px">
+        <div class="section-title">Método de pago</div>
+        <div id="est-metodos"><div class="empty-state" style="padding:24px"><p>Sin datos</p></div></div>
+      </div>
+
+      <!-- Top 5 gastos -->
+      <div class="form-card" style="margin-bottom:20px">
+        <div class="section-title">Top 5 gastos del mes</div>
+        <div id="est-top5"></div>
+      </div>
+    </div>
+
   </main>
 </div>
 
 <div id="toast"><span id="ti">✅</span><span id="tm">—</span></div>
 
 <script>
+// ── UTILS — van primero para evitar errores de inicialización ──
+function hoy() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+}
+const g       = id  => document.getElementById(id)?.value?.trim() || "";
+const esc     = s   => (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const setErr  = id  => document.getElementById(id)?.classList.add("error");
+const clrErr  = ids => ids.forEach(id => document.getElementById(id)?.classList.remove("error"));
+const hide    = id  => { const el=document.getElementById(id); if(el) el.style.display="none"; };
+const showErr = (id,msg) => { const el=document.getElementById(id); if(el){el.textContent=msg; el.style.display="block";} };
+const setBtn  = (id,txt,dis) => { const b=document.getElementById(id); b.disabled=dis; b.textContent=txt; };
+const empty   = (icon,msg) => `<div class="empty-state"><div class="empty-icon">${icon}</div><p>${msg}</p></div>`;
+const skels   = n => Array.from({length:n},()=>`<div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px 22px;display:flex;align-items:center;gap:16px;margin-bottom:12px"><div class="skeleton" style="width:44px;height:44px;border-radius:12px;flex-shrink:0"></div><div style="flex:1"><div class="skeleton" style="height:16px;width:60%;margin-bottom:8px"></div><div class="skeleton" style="height:12px;width:40%"></div></div><div class="skeleton" style="height:20px;width:64px"></div></div>`).join("");
+function fmtFecha(d) { if(!d)return""; const[y,m,day]=d.split("-"); const ms=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"]; return `${parseInt(day)} ${ms[parseInt(m)-1]} ${y}`; }
+function fmtMes(ym)  { const[y,m]=ym.split("-"); const ms=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"]; return `${ms[parseInt(m)-1]} ${y}`; }
+function clearForm() {
+  ["titulo","monto","descripcion","lugar","etiqueta"].forEach(id=>{const el=document.getElementById(id);if(el)el.value="";});
+  document.getElementById("categoria").value=""; document.getElementById("p1").checked=true;
+  document.getElementById("fecha").value=hoy();
+  ["cc-t","cc-d"].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent="0";});
+  clrErr(["f-titulo","f-cat","f-monto","f-fecha"]);
+}
+let toastT;
+function toast(msg, type="success") {
+  const t=document.getElementById("toast"); document.getElementById("ti").textContent=type==="success"?"✅":"❌"; document.getElementById("tm").textContent=msg; t.className="show "+type; clearTimeout(toastT); toastT=setTimeout(()=>t.className="",3200);
+}
+
 // ══════════════════════════════════════════
 //  ⚙️  EDITA ESTOS 3 VALORES
 // ══════════════════════════════════════════
@@ -524,29 +622,36 @@ function showApp() {
   // Siempre arranca en Registrar sin importar desde dónde se cerró sesión
   document.getElementById("view-registrar").style.display = "block";
   document.getElementById("view-consultar").style.display = "none";
+  document.getElementById("view-estadisticas").style.display = "none";
   document.getElementById("nav-reg").classList.add("active");
   document.getElementById("nav-con").classList.remove("active");
+  document.getElementById("nav-est").classList.remove("active");
   document.getElementById("bnav-reg").classList.add("active");
   document.getElementById("bnav-con").classList.remove("active");
+  document.getElementById("bnav-est").classList.remove("active");
   startSessionTimer();
   cargarResumen();
   cargarHoy();
 }
 
 function showView(v) {
-  document.getElementById("view-registrar").style.display = v === "registrar" ? "block" : "none";
-  document.getElementById("view-consultar").style.display = v === "consultar"  ? "block" : "none";
+  ["registrar","consultar","estadisticas"].forEach(id => {
+    document.getElementById("view-" + id).style.display = v === id ? "block" : "none";
+  });
   // Nav superior
   document.getElementById("nav-reg").classList.toggle("active", v === "registrar");
   document.getElementById("nav-con").classList.toggle("active", v === "consultar");
+  document.getElementById("nav-est").classList.toggle("active", v === "estadisticas");
   // Nav inferior móvil
   document.getElementById("bnav-reg").classList.toggle("active", v === "registrar");
   document.getElementById("bnav-con").classList.toggle("active", v === "consultar");
+  document.getElementById("bnav-est").classList.toggle("active", v === "estadisticas");
   if (v === "consultar") {
     document.getElementById("filtro-mes").value = hoy().substring(0,7);
     document.getElementById("filtro-dia").value = "";
     consultarGastos();
   }
+  if (v === "estadisticas") cargarEstadisticas();
 }
 
 function setUserUI(n) { document.getElementById("user-name").textContent = n; document.getElementById("user-avatar").textContent = n.charAt(0).toUpperCase(); }
@@ -745,9 +850,144 @@ async function cargarResumen() {
   } catch(e) { console.warn("Resumen:", e.message); }
 }
 
+// ── ESTADÍSTICAS ─────────────────────────────────────────
+let estMes = hoy().substring(0,7);
+
+const CAT_COLORS = {
+  hormiga: '#f97316', combustible: '#facc15', salidas: '#38bdf8',
+  bebidas: '#a78bfa', fijos: '#f43f5e', otro: '#94a3b8'
+};
+const PAY_ICONS = { efectivo:'💵', tarjeta_debito:'💳', tarjeta_credito:'🏦', yape_plin:'📱' };
+const DIAS_SEMANA = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+
+function cambiarMesEst(delta) {
+  const [y, m] = estMes.split('-').map(Number);
+  const d = new Date(y, m - 1 + delta, 1);
+  estMes = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+  cargarEstadisticas();
+}
+
+async function cargarEstadisticas() {
+  document.getElementById("est-mes-label").textContent = fmtMes(estMes);
+  // Mostrar skeletons
+  ["est-kpis","est-categorias","est-dias","est-metodos","est-top5"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = `<div style="color:var(--muted);font-size:13px;padding:12px 0">Cargando...</div>`;
+  });
+
+  try {
+    const data = await lmb("/gastos", "GET", null, "mes=" + estMes);
+    const gastos = data.gastos || [];
+    renderEstadisticas(gastos);
+  } catch(e) {
+    document.getElementById("est-categorias").innerHTML = empty("⚠️", e.message);
+  }
+}
+
+function renderEstadisticas(gastos) {
+  if (!gastos.length) {
+    ["est-categorias","est-dias","est-metodos","est-top5"].forEach(id => {
+      document.getElementById(id).innerHTML = `<div class="empty-state" style="padding:24px"><div class="empty-icon">📊</div><p>Sin gastos en ${fmtMes(estMes)}</p></div>`;
+    });
+    document.getElementById("est-kpis").innerHTML = `
+      <div class="est-kpi-card"><div class="rc-label">Total gastado</div><div class="rc-value">S/ 0.00</div></div>
+      <div class="est-kpi-card"><div class="rc-label">Nº de gastos</div><div class="rc-value">0</div></div>
+      <div class="est-kpi-card"><div class="rc-label">Promedio por gasto</div><div class="rc-value">S/ 0.00</div></div>
+      <div class="est-kpi-card"><div class="rc-label">Gasto más alto</div><div class="rc-value">—</div></div>`;
+    return;
+  }
+
+  const montos = gastos.map(g => parseFloat(g.monto || 0));
+  const total  = montos.reduce((a,b) => a+b, 0);
+  const avg    = total / gastos.length;
+  const maxG   = gastos.reduce((a,b) => parseFloat(a.monto) > parseFloat(b.monto) ? a : b);
+
+  // KPIs
+  document.getElementById("est-kpis").innerHTML = `
+    <div class="est-kpi-card"><div class="rc-label">Total gastado</div><div class="rc-value">S/ ${total.toFixed(2)}</div></div>
+    <div class="est-kpi-card"><div class="rc-label">Nº de gastos</div><div class="rc-value">${gastos.length}</div></div>
+    <div class="est-kpi-card"><div class="rc-label">Promedio por gasto</div><div class="rc-value">S/ ${avg.toFixed(2)}</div></div>
+    <div class="est-kpi-card"><div class="rc-label">Gasto más alto</div><div class="rc-value">S/ ${parseFloat(maxG.monto).toFixed(2)}</div><div class="rc-sub">${esc(maxG.titulo)}</div></div>`;
+
+  // Por categoría
+  const porCat = {};
+  gastos.forEach(g => {
+    const c = g.categoria || 'otro';
+    porCat[c] = (porCat[c] || 0) + parseFloat(g.monto || 0);
+  });
+  const maxCat = Math.max(...Object.values(porCat));
+  const catHTML = Object.entries(porCat)
+    .sort((a,b) => b[1]-a[1])
+    .map(([cat, val]) => {
+      const cfg = CAT[cat] || CAT.otro;
+      const pct = (val / maxCat * 100).toFixed(1);
+      const color = CAT_COLORS[cat] || '#94a3b8';
+      return `<div class="est-bar-row">
+        <div class="est-bar-label">${cfg.e} ${cfg.l}</div>
+        <div class="est-bar-track"><div class="est-bar-fill" style="width:${pct}%;background:${color}"></div></div>
+        <div class="est-bar-val">S/ ${val.toFixed(2)}</div>
+      </div>`;
+    }).join('');
+  document.getElementById("est-categorias").innerHTML = catHTML;
+
+  // Por día de la semana
+  const porDia = {0:0,1:0,2:0,3:0,4:0,5:0,6:0};
+  gastos.forEach(g => {
+    if (g.fecha) {
+      const [y,m,d] = g.fecha.split('-').map(Number);
+      const dow = new Date(y, m-1, d).getDay();
+      porDia[dow] = (porDia[dow] || 0) + parseFloat(g.monto || 0);
+    }
+  });
+  const maxDia = Math.max(...Object.values(porDia)) || 1;
+  const diaHTML = Object.entries(porDia).map(([dow, val]) => {
+    const pct = (val / maxDia * 100).toFixed(1);
+    return `<div class="est-bar-row">
+      <div class="est-bar-label">${DIAS_SEMANA[dow]}</div>
+      <div class="est-bar-track"><div class="est-bar-fill" style="width:${pct}%;background:var(--accent)"></div></div>
+      <div class="est-bar-val">${val > 0 ? 'S/ '+val.toFixed(2) : '—'}</div>
+    </div>`;
+  }).join('');
+  document.getElementById("est-dias").innerHTML = diaHTML;
+
+  // Por método de pago
+  const porPago = {};
+  gastos.forEach(g => {
+    const p = g.metodoPago || 'efectivo';
+    porPago[p] = (porPago[p] || 0) + parseFloat(g.monto || 0);
+  });
+  const maxPago = Math.max(...Object.values(porPago));
+  const pagoHTML = Object.entries(porPago)
+    .sort((a,b) => b[1]-a[1])
+    .map(([pago, val]) => {
+      const pct = (val / maxPago * 100).toFixed(1);
+      const icon = PAY_ICONS[pago] || '💰';
+      const label = PAY[pago] || pago;
+      return `<div class="est-bar-row">
+        <div class="est-bar-label">${icon} ${label.replace(/[💵💳🏦📱]\s/,'')}</div>
+        <div class="est-bar-track"><div class="est-bar-fill" style="width:${pct}%;background:var(--accent2)"></div></div>
+        <div class="est-bar-val">S/ ${val.toFixed(2)}</div>
+      </div>`;
+    }).join('');
+  document.getElementById("est-metodos").innerHTML = pagoHTML;
+
+  // Top 5 gastos
+  const top5 = [...gastos].sort((a,b) => parseFloat(b.monto)-parseFloat(a.monto)).slice(0,5);
+  const top5HTML = top5.map((g, i) => {
+    const cat = CAT[g.categoria] || CAT.otro;
+    return `<div class="est-top-item">
+      <div class="est-top-num">#${i+1}</div>
+      <div class="est-top-info">
+        <div class="est-top-title">${esc(g.titulo)}</div>
+        <div class="est-top-sub">${cat.e} ${cat.l} · ${fmtFecha(g.fecha)}</div>
+      </div>
+      <div class="est-top-amount">S/ ${parseFloat(g.monto).toFixed(2)}</div>
+    </div>`;
+  }).join('');
+  document.getElementById("est-top5").innerHTML = top5HTML;
+}
+
 function onFiltroMesChange() {
-  // Al seleccionar mes, limpiar día
-  document.getElementById("filtro-dia").value = "";
   consultarGastos();
 }
 
@@ -828,39 +1068,8 @@ function cardHTML(g, allowDelete = false) {
   </div>`;
 }
 
-// UTILS
-const g      = id => document.getElementById(id)?.value?.trim() || "";
-const hoy = () => {
-  const d = new Date();
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
-};
-const esc    = s   => (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-const setErr = id  => document.getElementById(id)?.classList.add("error");
-const clrErr = ids => ids.forEach(id => document.getElementById(id)?.classList.remove("error"));
-const hide   = id  => { const el=document.getElementById(id); if(el) el.style.display="none"; };
-const showErr = (id,msg) => { const el=document.getElementById(id); if(el){el.textContent=msg; el.style.display="block";} };
-const setBtn  = (id,txt,dis) => { const b=document.getElementById(id); b.disabled=dis; b.textContent=txt; };
-const empty   = (icon,msg) => `<div class="empty-state"><div class="empty-icon">${icon}</div><p>${msg}</p></div>`;
-const skels   = n => Array.from({length:n},()=>`<div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px 22px;display:flex;align-items:center;gap:16px;margin-bottom:12px"><div class="skeleton" style="width:44px;height:44px;border-radius:12px;flex-shrink:0"></div><div style="flex:1"><div class="skeleton" style="height:16px;width:60%;margin-bottom:8px"></div><div class="skeleton" style="height:12px;width:40%"></div></div><div class="skeleton" style="height:20px;width:64px"></div></div>`).join("");
-
-function clearForm() {
-  ["titulo","monto","descripcion","lugar","etiqueta"].forEach(id=>{const el=document.getElementById(id);if(el)el.value="";});
-  document.getElementById("categoria").value=""; document.getElementById("p1").checked=true;
-  document.getElementById("fecha").value=hoy();
-  ["cc-t","cc-d"].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent="0";});
-  clrErr(["f-titulo","f-cat","f-monto","f-fecha"]);
-}
-
 function fmtFecha(d) { if(!d)return""; const[y,m,day]=d.split("-"); const ms=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"]; return `${parseInt(day)} ${ms[parseInt(m)-1]} ${y}`; }
 function fmtMes(ym)  { const[y,m]=ym.split("-"); const ms=["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"]; return `${ms[parseInt(m)-1]} ${y}`; }
-
-let toastT;
-function toast(msg, type="success") {
-  const t=document.getElementById("toast"); document.getElementById("ti").textContent=type==="success"?"✅":"❌"; document.getElementById("tm").textContent=msg; t.className="show "+type; clearTimeout(toastT); toastT=setTimeout(()=>t.className="",3200);
-}
 </script>
 </body>
 </html>
