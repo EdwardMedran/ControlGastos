@@ -145,12 +145,14 @@
     .expense-delete { background: none; border: none; color: var(--muted); cursor: pointer; padding: 8px; border-radius: 8px; transition: all 0.2s; flex-shrink: 0; }
     .expense-delete:hover { background: rgba(255,107,107,0.1); color: var(--danger); }
     .cat-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; }
-    .cat-hormiga { background: rgba(255,126,179,0.15); color: #ff7eb3; }
+    .cat-hormiga     { background: rgba(255,126,179,0.15); color: #ff7eb3; }
     .cat-combustible { background: rgba(255,209,102,0.15); color: #ffd166; }
-    .cat-salidas { background: rgba(93,228,192,0.15); color: #5de4c0; }
-    .cat-bebidas { background: rgba(124,109,250,0.15); color: #9b8dff; }
-    .cat-fijos { background: rgba(255,107,107,0.15); color: #ff6b6b; }
-    .cat-otro { background: rgba(122,122,142,0.15); color: #b0b0c0; }
+    .cat-salidas     { background: rgba(93,228,192,0.15);  color: #5de4c0; }
+    .cat-comida      { background: rgba(251,146,60,0.15);  color: #fb923c; }
+    .cat-fijos       { background: rgba(255,107,107,0.15); color: #ff6b6b; }
+    .cat-estudios    { background: rgba(56,189,248,0.15);  color: #38bdf8; }
+    .cat-inversion   { background: rgba(74,222,128,0.15);  color: #4ade80; }
+    .cat-otros       { background: rgba(122,122,142,0.15); color: #b0b0c0; }
 
     .skeleton { background: linear-gradient(90deg, var(--surface2) 25%, var(--border) 50%, var(--surface2) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
     @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
@@ -374,12 +376,14 @@
             <label>Categoría *</label>
             <select id="categoria">
               <option value="" disabled selected>Seleccionar categoría</option>
-              <option value="hormiga">🐜 Gasto hormiga</option>
+              <option value="hormiga">🐜 Gastos Hormiga</option>
               <option value="combustible">⛽ Combustible</option>
               <option value="salidas">🎉 Salidas</option>
-              <option value="bebidas">🧃 Bebidas</option>
-              <option value="fijos">🏠 Gastos fijos del mes</option>
-              <option value="otro">📦 Otro</option>
+              <option value="comida">🍽️ Comida</option>
+              <option value="fijos">🏠 Gastos Fijos</option>
+              <option value="estudios">📚 Estudios</option>
+              <option value="inversion">📈 Inversión</option>
+              <option value="otros">📦 Otros</option>
             </select>
             <span class="field-error">Selecciona una categoría</span>
           </div>
@@ -450,12 +454,14 @@
           <label>Categoría</label>
           <select id="filtro-cat" onchange="consultarGastos()">
             <option value="">Todas</option>
-            <option value="hormiga">🐜 Gasto hormiga</option>
+            <option value="hormiga">🐜 Gastos Hormiga</option>
             <option value="combustible">⛽ Combustible</option>
             <option value="salidas">🎉 Salidas</option>
-            <option value="bebidas">🧃 Bebidas</option>
-            <option value="fijos">🏠 Gastos fijos</option>
-            <option value="otro">📦 Otro</option>
+            <option value="comida">🍽️ Comida</option>
+            <option value="fijos">🏠 Gastos Fijos</option>
+            <option value="estudios">📚 Estudios</option>
+            <option value="inversion">📈 Inversión</option>
+            <option value="otros">📦 Otros</option>
           </select>
         </div>
       </div>
@@ -554,12 +560,14 @@ const CFG = {
 // ══════════════════════════════════════════
 
 const CAT = {
-  hormiga:     { e:'🐜', l:'Gasto hormiga',  c:'cat-hormiga'     },
+  hormiga:     { e:'🐜', l:'Gastos Hormiga', c:'cat-hormiga'     },
   combustible: { e:'⛽', l:'Combustible',     c:'cat-combustible' },
   salidas:     { e:'🎉', l:'Salidas',         c:'cat-salidas'     },
-  bebidas:     { e:'🧃', l:'Bebidas',         c:'cat-bebidas'     },
-  fijos:       { e:'🏠', l:'Gastos fijos',    c:'cat-fijos'       },
-  otro:        { e:'📦', l:'Otro',            c:'cat-otro'        },
+  comida:      { e:'🍽️', l:'Comida',          c:'cat-comida'      },
+  fijos:       { e:'🏠', l:'Gastos Fijos',    c:'cat-fijos'       },
+  estudios:    { e:'📚', l:'Estudios',        c:'cat-estudios'    },
+  inversion:   { e:'📈', l:'Inversión',       c:'cat-inversion'   },
+  otros:       { e:'📦', l:'Otros',           c:'cat-otros'       },
 };
 const PAY = { efectivo:'💵 Efectivo', tarjeta_debito:'💳 Débito', tarjeta_credito:'🏦 Crédito', yape_plin:'📱 Yape/Plin' };
 
@@ -865,8 +873,9 @@ async function cargarResumen() {
 let estMes = hoy().substring(0,7);
 
 const CAT_COLORS = {
-  hormiga: '#f97316', combustible: '#facc15', salidas: '#38bdf8',
-  bebidas: '#a78bfa', fijos: '#f43f5e', otro: '#94a3b8'
+  hormiga: '#ff7eb3', combustible: '#ffd166', salidas: '#5de4c0',
+  comida: '#fb923c', fijos: '#f43f5e', estudios: '#38bdf8',
+  inversion: '#4ade80', otros: '#94a3b8'
 };
 const PAY_ICONS = { efectivo:'💵', tarjeta_debito:'💳', tarjeta_credito:'🏦', yape_plin:'📱' };
 const DIAS_SEMANA = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
@@ -930,7 +939,7 @@ function renderEstadisticas(gastos) {
   const catHTML = Object.entries(porCat)
     .sort((a,b) => b[1]-a[1])
     .map(([cat, val]) => {
-      const cfg = CAT[cat] || CAT.otro;
+      const cfg = CAT[cat] || CAT.otros;
       const pct = (val / maxCat * 100).toFixed(1);
       const color = CAT_COLORS[cat] || '#94a3b8';
       return `<div class="est-bar-row">
@@ -985,7 +994,7 @@ function renderEstadisticas(gastos) {
   // Top 5 gastos
   const top5 = [...gastos].sort((a,b) => parseFloat(b.monto)-parseFloat(a.monto)).slice(0,5);
   const top5HTML = top5.map((g, i) => {
-    const cat = CAT[g.categoria] || CAT.otro;
+    const cat = CAT[g.categoria] || CAT.otros;
     return `<div class="est-top-item">
       <div class="est-top-num">#${i+1}</div>
       <div class="est-top-info">
@@ -1061,7 +1070,7 @@ function renderLista(gastos, el, countId, allowDelete = false) {
 }
 
 function cardHTML(g, allowDelete = false) {
-  const cat  = CAT[g.categoria] || CAT.otro;
+  const cat  = CAT[g.categoria] || CAT.otros;
   const desc = g.descripcion ? `<span style="font-size:12px;color:var(--muted);display:block;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:320px">${esc(g.descripcion)}</span>` : "";
   const lugar = g.lugar ? `<span class="expense-date">📍 ${esc(g.lugar)}</span>` : "";
   const deleteBtn = allowDelete ? `
