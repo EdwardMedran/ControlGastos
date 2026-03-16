@@ -186,12 +186,15 @@
       .page-header h1 { font-size: 26px; }
       .page-header p { font-size: 13px; }
 
-      /* RESUMEN — scroll horizontal en móvil */
-      .resumen-grid { grid-template-columns: repeat(3, minmax(130px, 1fr)); gap: 10px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 20px; scrollbar-width: none; }
-      .resumen-grid::-webkit-scrollbar { display: none; }
-      .resumen-card { padding: 14px 16px; min-width: 130px; }
-      .rc-value { font-size: 16px; }
+      /* RESUMEN — apilado en móvil para que se vea completo */
+      .resumen-grid { grid-template-columns: 1fr 1fr; gap: 10px; overflow-x: unset; padding-bottom: 0; margin-bottom: 20px; }
+      .resumen-card { padding: 14px 14px; min-width: unset; }
+      .rc-value { font-size: 18px; }
       .rc-label { font-size: 10px; }
+      /* La tercera tarjeta ocupa el ancho completo */
+      .resumen-card:nth-child(3) { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+      .resumen-card:nth-child(3) .rc-value { font-size: 16px; white-space: normal; overflow: visible; }
+      .resumen-card:nth-child(3) .rc-sub { margin-top: 0; }
 
       /* FORM */
       .form-card { padding: 20px 16px; border-radius: 16px; }
@@ -493,6 +496,7 @@ function showApp() {
   });
   document.getElementById("app").style.display = "block";
   document.getElementById("fecha").value = hoy();
+  startSessionTimer();
   cargarResumen(); cargarHoy();
 }
 
@@ -606,6 +610,7 @@ function toggleEye(inputId, btn) {
 }
 
 function doLogout() {
+  stopSessionTimer();
   if (cognitoUser) cognitoUser.signOut();
   cognitoUser = null; idToken = null; tokenExp = 0;
   Object.keys(localStorage).forEach(key => {
@@ -623,7 +628,32 @@ async function getToken() {
   return new Promise((res, rej) => { if (!cognitoUser) return rej("Sin sesión"); cognitoUser.getSession((e,s) => { if(e) return rej(e); setToken(s); res(idToken); }); });
 }
 
-// LAMBDA CALL
+// ── TIMER DE SESIÓN: 5 minutos de inactividad → logout automático ──
+let sessionTimer = null;
+const SESSION_TIMEOUT = 5 * 60 * 1000; // 5 minutos en ms
+
+function resetSessionTimer() {
+  clearTimeout(sessionTimer);
+  sessionTimer = setTimeout(() => {
+    toast("Sesión expirada por inactividad", "error");
+    setTimeout(() => doLogout(), 1500);
+  }, SESSION_TIMEOUT);
+}
+
+function startSessionTimer() {
+  resetSessionTimer();
+  // Reiniciar timer con cualquier interacción del usuario
+  ["click","touchstart","keydown","scroll"].forEach(ev =>
+    document.addEventListener(ev, resetSessionTimer, { passive: true })
+  );
+}
+
+function stopSessionTimer() {
+  clearTimeout(sessionTimer);
+  ["click","touchstart","keydown","scroll"].forEach(ev =>
+    document.removeEventListener(ev, resetSessionTimer)
+  );
+}
 async function lmb(path, method = "GET", body = null, qs = "") {
   const token = await getToken();
   const url = CFG.LAMBDA_URL + path + (qs ? "?" + qs : "");
