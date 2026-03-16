@@ -9,15 +9,26 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #0d0f14; --surface: #13161e; --surface2: #1c2030;
-      --border: rgba(255,255,255,0.07); --border-hover: rgba(255,255,255,0.14);
-      --accent: #7c6dfa; --accent2: #5de4c0; --accent3: #ff7eb3;
-      --text: #eeedf0; --muted: #7a7a8e; --danger: #ff6b6b;
-      --font-display: 'Syne', sans-serif; --font-body: 'DM Sans', sans-serif;
-      --radius: 16px; --radius-sm: 10px;
+      --bg: #0f1117;
+      --surface: #181c27;
+      --surface2: #222840;
+      --border: rgba(255,255,255,0.08);
+      --border-hover: rgba(255,255,255,0.16);
+      --accent: #f97316;
+      --accent2: #facc15;
+      --accent3: #38bdf8;
+      --accent-glow: rgba(249,115,22,0.25);
+      --text: #f1f0ee;
+      --muted: #8a8fa8;
+      --danger: #f43f5e;
+      --success: #22c55e;
+      --font-display: 'Syne', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+      --radius: 16px;
+      --radius-sm: 10px;
     }
     body { background: var(--bg); color: var(--text); font-family: var(--font-body); min-height: 100vh; overflow-x: hidden; }
-    body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse 60% 50% at 20% 20%, rgba(124,109,250,0.12) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 80% 80%, rgba(93,228,192,0.08) 0%, transparent 60%); pointer-events: none; z-index: 0; }
+    body::before { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse 55% 45% at 15% 10%, rgba(249,115,22,0.1) 0%, transparent 55%), radial-gradient(ellipse 45% 40% at 85% 85%, rgba(56,189,248,0.08) 0%, transparent 55%); pointer-events: none; z-index: 0; }
 
     /* LOADER */
     #global-loader { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; gap: 16px; }
@@ -27,8 +38,8 @@
 
     /* SCREENS */
     .screen { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 100; padding: 24px; }
-    .screen::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 60% at 30% 30%, rgba(124,109,250,0.18) 0%, transparent 55%), radial-gradient(ellipse 60% 50% at 75% 70%, rgba(93,228,192,0.1) 0%, transparent 55%); }
-    .auth-card { position: relative; z-index: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 48px 44px; width: 100%; max-width: 420px; box-shadow: 0 32px 80px rgba(0,0,0,0.5); }
+    .screen::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 60% at 25% 25%, rgba(249,115,22,0.15) 0%, transparent 55%), radial-gradient(ellipse 55% 50% at 80% 75%, rgba(56,189,248,0.08) 0%, transparent 55%); }
+    .auth-card { position: relative; z-index: 1; background: var(--surface); border: 1px solid rgba(249,115,22,0.15); border-radius: 24px; padding: 48px 44px; width: 100%; max-width: 420px; box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(249,115,22,0.08); }
     .screen.active { display: flex; }
 
     .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; }
@@ -43,21 +54,21 @@
     .field { margin-bottom: 20px; }
     .field label { display: block; font-size: 12px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
     .field input, .field select, .field textarea { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-family: var(--font-body); font-size: 15px; padding: 13px 16px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; appearance: none; }
-    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,109,250,0.15); }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(249,115,22,0.15); }
     .field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%237a7a8e'%3E%3Cpath d='M5 7l5 5 5-5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; background-size: 18px; padding-right: 40px; cursor: pointer; }
     .field select option { background: #1c2030; }
     .field textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
     .field input::placeholder, .field textarea::placeholder { color: var(--muted); opacity: 0.6; }
-    .field.error input, .field.error select, .field.error textarea { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(255,107,107,0.15); }
+    .field.error input, .field.error select, .field.error textarea { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(244,63,94,0.15); }
     .field-error { font-size: 12px; color: var(--danger); margin-top: 6px; display: none; }
     .field.error .field-error { display: block; }
     .char-counter { font-size: 11px; color: var(--muted); text-align: right; margin-top: 4px; }
 
     /* BUTTONS */
-    .btn-primary { width: 100%; background: linear-gradient(135deg, var(--accent), #9b8dff); color: #fff; border: none; border-radius: var(--radius-sm); padding: 15px 24px; font-family: var(--font-display); font-size: 16px; font-weight: 700; cursor: pointer; transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s; box-shadow: 0 4px 20px rgba(124,109,250,0.4); display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-primary { width: 100%; background: linear-gradient(135deg, #f97316, #fb923c); color: #fff; border: none; border-radius: var(--radius-sm); padding: 15px 24px; font-family: var(--font-display); font-size: 16px; font-weight: 700; cursor: pointer; transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s; box-shadow: 0 4px 20px rgba(249,115,22,0.4); display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 8px 28px rgba(249,115,22,0.45); }
     .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-    .btn-submit { background: linear-gradient(135deg, var(--accent), #9b8dff); color: #fff; border: none; border-radius: var(--radius-sm); padding: 15px 36px; font-family: var(--font-display); font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 20px rgba(124,109,250,0.4); display: flex; align-items: center; gap: 10px; }
+    .btn-submit { background: linear-gradient(135deg, #f97316, #fb923c); color: #fff; border: none; border-radius: var(--radius-sm); padding: 15px 36px; font-family: var(--font-display); font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 20px rgba(249,115,22,0.4); display: flex; align-items: center; gap: 10px; }
     .btn-submit:hover { opacity: 0.9; transform: translateY(-1px); }
     .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
     .btn-clear { background: none; border: 1px solid var(--border); color: var(--muted); padding: 15px 24px; border-radius: var(--radius-sm); font-size: 15px; cursor: pointer; transition: all 0.2s; font-family: var(--font-body); }
@@ -76,36 +87,35 @@
 
     /* NAV */
     #app { display: none; position: relative; z-index: 1; min-height: 100vh; }
-    .nav { position: sticky; top: 0; z-index: 50; background: rgba(13,15,20,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .nav { position: sticky; top: 0; z-index: 50; background: rgba(15,17,23,0.92); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(249,115,22,0.12); padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 64px; }
     .nav-brand { display: flex; align-items: center; gap: 12px; }
-    .nav-icon { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-size: 16px; }
     .nav-brand h2 { font-family: var(--font-display); font-size: 18px; font-weight: 700; }
     .nav-brand h2 span { color: var(--accent); }
     .nav-right { display: flex; align-items: center; gap: 16px; }
     .nav-user { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--muted); }
-    .nav-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--accent3), var(--accent)); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; }
+    .nav-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #f97316, #facc15); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; }
     .nav-links { display: flex; gap: 4px; }
     .nav-link { padding: 7px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; background: none; color: var(--muted); transition: all 0.2s; font-family: var(--font-body); }
-    .nav-link.active { background: rgba(124,109,250,0.15); color: var(--accent); }
+    .nav-link.active { background: rgba(249,115,22,0.12); color: var(--accent); }
     .nav-link:hover:not(.active) { color: var(--text); background: var(--surface); }
 
     /* MAIN */
     .main { max-width: 760px; margin: 0 auto; padding: 40px 24px 80px; }
     .page-header { margin-bottom: 36px; }
-    .page-header h1 { font-family: var(--font-display); font-size: 36px; font-weight: 800; letter-spacing: -1px; margin-bottom: 6px; background: linear-gradient(135deg, var(--text) 40%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .page-header h1 { font-family: var(--font-display); font-size: 36px; font-weight: 800; letter-spacing: -1px; margin-bottom: 6px; background: linear-gradient(135deg, var(--text) 30%, var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .page-header p { font-size: 15px; color: var(--muted); }
 
     /* RESUMEN */
     .resumen-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 32px; }
-    .resumen-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 18px 20px; }
+    .resumen-card { background: var(--surface); border: 1px solid rgba(249,115,22,0.1); border-radius: 16px; padding: 18px 20px; }
     .rc-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
-    .rc-value { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .rc-sub { font-size: 12px; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .rc-value { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .rc-sub { font-size: 13px; color: var(--muted); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
     /* FORM */
-    .form-card { background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 36px; box-shadow: 0 16px 48px rgba(0,0,0,0.3); }
+    .form-card { background: var(--surface); border: 1px solid rgba(249,115,22,0.1); border-radius: 24px; padding: 36px; box-shadow: 0 16px 48px rgba(0,0,0,0.3); }
     .section-title { font-family: var(--font-display); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--accent); margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
-    .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(249,115,22,0.15); }
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     .amount-wrap { position: relative; }
     .amount-wrap .currency { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--accent2); font-weight: 600; font-size: 16px; pointer-events: none; }
@@ -113,7 +123,7 @@
     .pay-toggle { display: flex; gap: 8px; flex-wrap: wrap; }
     .pay-option { display: none; }
     .pay-label { padding: 9px 16px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; color: var(--muted); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px; }
-    .pay-option:checked + .pay-label { border-color: var(--accent); background: rgba(124,109,250,0.12); color: var(--accent); }
+    .pay-option:checked + .pay-label { border-color: var(--accent); background: rgba(249,115,22,0.1); color: var(--accent); }
     .submit-area { display: flex; align-items: center; justify-content: space-between; margin-top: 32px; padding-top: 24px; border-top: 1px solid var(--border); gap: 16px; flex-wrap: wrap; }
 
     /* LISTA */
@@ -146,16 +156,16 @@
     @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
     /* BOTTOM NAV MÓVIL */
-    .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; background: rgba(13,15,20,0.95); backdrop-filter: blur(20px); border-top: 1px solid var(--border); height: 72px; padding: 0 8px; padding-bottom: env(safe-area-inset-bottom); }
-    .bottom-nav-inner { display: flex; height: 100%; align-items: center; justify-content: space-around; }
-    .bottom-nav-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 20px; border: none; background: none; color: var(--muted); font-family: var(--font-body); font-size: 11px; font-weight: 500; cursor: pointer; border-radius: 12px; transition: all 0.2s; flex: 1; }
+    .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; background: rgba(15,17,23,0.96); backdrop-filter: blur(20px); border-top: 1px solid rgba(249,115,22,0.12); height: 72px; padding: 0 8px; padding-bottom: env(safe-area-inset-bottom); }
+    .bottom-nav-inner { display: flex; height: 100%; align-items: center; justify-content: center; gap: 24px; }
+    .bottom-nav-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 32px; border: none; background: none; color: var(--muted); font-family: var(--font-body); font-size: 11px; font-weight: 500; cursor: pointer; border-radius: 12px; transition: all 0.2s; }
     .bottom-nav-btn svg { width: 22px; height: 22px; }
-    .bottom-nav-btn.active { color: var(--accent); background: rgba(124,109,250,0.1); }
+    .bottom-nav-btn.active { color: var(--accent); background: rgba(249,115,22,0.1); }
 
     #toast { position: fixed; bottom: 32px; right: 32px; background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; padding: 16px 22px; font-size: 14px; color: var(--text); box-shadow: 0 16px 48px rgba(0,0,0,0.5); transform: translateY(100px); opacity: 0; transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 200; display: flex; align-items: center; gap: 12px; max-width: 340px; }
     #toast.show { transform: translateY(0); opacity: 1; }
-    #toast.success { border-color: rgba(93,228,192,0.3); }
-    #toast.error   { border-color: rgba(255,107,107,0.3); }
+    #toast.success { border-color: rgba(249,115,22,0.4); }
+    #toast.error   { border-color: rgba(244,63,94,0.3); }
 
     @media (max-width: 600px) {
       /* AUTH SCREENS — centrado vertical */
@@ -232,7 +242,7 @@
 <!-- LOGIN -->
 <div id="login-screen" class="screen">
   <div class="auth-card">
-    <div class="brand"><div class="brand-icon">💰</div><div><h1>Control de <span>Gastos</span></h1><p>Finanzas personales</p></div></div>
+    <div class="brand"><div><h1>Control de <span>Gastos</span></h1><p>Finanzas personales</p></div></div>
     <h2 class="auth-title">Iniciar sesión</h2>
     <p class="auth-sub">Accede con tu cuenta de Cognito</p>
     <div class="auth-error" id="login-error"></div>
@@ -256,7 +266,7 @@
 <!-- CAMBIAR CONTRASEÑA TEMPORAL -->
 <div id="newpass-screen" class="screen">
   <div class="auth-card">
-    <div class="brand"><div class="brand-icon">💰</div><div><h1>Control de <span>Gastos</span></h1><p>Primer acceso</p></div></div>
+    <div class="brand"><div><h1>Control de <span>Gastos</span></h1><p>Primer acceso</p></div></div>
     <h2 class="auth-title">Crea tu contraseña</h2>
     <p class="auth-sub">Tu cuenta fue creada con una contraseña temporal. Establece una contraseña permanente para continuar.</p>
     <div class="auth-error" id="newpass-error"></div>
@@ -283,7 +293,7 @@
 <!-- APP -->
 <div id="app">
   <nav class="nav">
-    <div class="nav-brand"><div class="nav-icon">💰</div><h2>Control de <span>Gastos</span></h2></div>
+    <div class="nav-brand"><h2>Control de <span>Gastos</span></h2></div>
     <div class="nav-links">
       <button class="nav-link active" id="nav-reg" onclick="showView('registrar')">Registrar</button>
       <button class="nav-link"        id="nav-con" onclick="showView('consultar')">Consultar</button>
@@ -306,10 +316,6 @@
       <button class="bottom-nav-btn" id="bnav-con" onclick="showView('consultar')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         Consultar
-      </button>
-      <button class="bottom-nav-btn" onclick="doLogout()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        Salir
       </button>
     </div>
   </nav>
@@ -398,27 +404,34 @@
 
     <!-- VISTA CONSULTAR -->
     <div id="view-consultar" style="display:none">
-      <div class="page-header"><h1>Consultar Gastos</h1><p>Filtra tus gastos por mes y categoría</p></div>
+      <div class="page-header"><h1>Consultar Gastos</h1><p>Filtra tus gastos por mes, día y categoría</p></div>
       <div class="form-card" style="margin-bottom:28px">
         <div class="section-title">Filtros</div>
         <div class="grid-2">
-          <div class="field"><label>Mes</label><input type="month" id="filtro-mes" onchange="consultarGastos()" /></div>
           <div class="field">
-            <label>Categoría</label>
-            <select id="filtro-cat" onchange="consultarGastos()">
-              <option value="">Todas</option>
-              <option value="hormiga">🐜 Gasto hormiga</option>
-              <option value="combustible">⛽ Combustible</option>
-              <option value="salidas">🎉 Salidas</option>
-              <option value="bebidas">🧃 Bebidas</option>
-              <option value="fijos">🏠 Gastos fijos</option>
-              <option value="otro">📦 Otro</option>
-            </select>
+            <label>Mes</label>
+            <input type="month" id="filtro-mes" onchange="onFiltroMesChange()" />
           </div>
+          <div class="field">
+            <label>Día específico</label>
+            <input type="date" id="filtro-dia" onchange="onFiltroDiaChange()" />
+          </div>
+        </div>
+        <div class="field">
+          <label>Categoría</label>
+          <select id="filtro-cat" onchange="consultarGastos()">
+            <option value="">Todas</option>
+            <option value="hormiga">🐜 Gasto hormiga</option>
+            <option value="combustible">⛽ Combustible</option>
+            <option value="salidas">🎉 Salidas</option>
+            <option value="bebidas">🧃 Bebidas</option>
+            <option value="fijos">🏠 Gastos fijos</option>
+            <option value="otro">📦 Otro</option>
+          </select>
         </div>
       </div>
       <div id="consulta-resumen" style="margin-bottom:20px"></div>
-      <div id="consulta-list"><div class="empty-state"><div class="empty-icon">🔍</div><p>Selecciona un mes para consultar.</p></div></div>
+      <div id="consulta-list"><div class="empty-state"><div class="empty-icon">🔍</div><p>Selecciona un mes o día para consultar.</p></div></div>
     </div>
 
   </main>
@@ -451,9 +464,20 @@ let cognitoUser = null, idToken = null, tokenExp = 0;
 const pool = new AmazonCognitoIdentity.CognitoUserPool({ UserPoolId: CFG.POOL_ID, ClientId: CFG.CLIENT_ID });
 
 // INIT
+const SESSION_MAX_MS = 5 * 60 * 1000; // 5 minutos
+
 window.addEventListener("load", () => {
   const u = pool.getCurrentUser();
   if (!u) return showScreen("login");
+
+  // Verificar si la sesión expiró por tiempo aunque el token siga válido
+  const loginTime = parseInt(localStorage.getItem("cg_login_time") || "0");
+  if (loginTime && Date.now() - loginTime > SESSION_MAX_MS) {
+    u.signOut();
+    localStorage.removeItem("cg_login_time");
+    return showScreen("login");
+  }
+
   u.getSession((err, session) => {
     try {
       if (!err && session && session.isValid()) {
@@ -463,6 +487,7 @@ window.addEventListener("load", () => {
         showApp();
       } else {
         u.signOut();
+        localStorage.removeItem("cg_login_time");
         showScreen("login");
       }
     } catch(e) {
@@ -517,7 +542,11 @@ function showView(v) {
   // Nav inferior móvil
   document.getElementById("bnav-reg").classList.toggle("active", v === "registrar");
   document.getElementById("bnav-con").classList.toggle("active", v === "consultar");
-  if (v === "consultar") { document.getElementById("filtro-mes").value = hoy().substring(0,7); consultarGastos(); }
+  if (v === "consultar") {
+    document.getElementById("filtro-mes").value = hoy().substring(0,7);
+    document.getElementById("filtro-dia").value = "";
+    consultarGastos();
+  }
 }
 
 function setUserUI(n) { document.getElementById("user-name").textContent = n; document.getElementById("user-avatar").textContent = n.charAt(0).toUpperCase(); }
@@ -552,6 +581,7 @@ function doLogin() {
         clearTimeout(loginTimeout);
         try {
           cognitoUser = cu; setToken(s);
+          localStorage.setItem("cg_login_time", Date.now().toString());
           const p = s.getIdToken().decodePayload();
           setUserUI(p.name || p.email || p["cognito:username"] || "Usuario");
           showApp();
@@ -621,10 +651,10 @@ function doLogout() {
   stopSessionTimer();
   if (cognitoUser) cognitoUser.signOut();
   cognitoUser = null; idToken = null; tokenExp = 0;
+  localStorage.removeItem("cg_login_time");
   Object.keys(localStorage).forEach(key => {
     if (key.startsWith("CognitoIdentityServiceProvider")) localStorage.removeItem(key);
   });
-  // Resetear botón de login por si quedó en estado "Iniciando..."
   setBtn("btn-login", "Iniciar sesión", false);
   document.getElementById("login-email").value = "";
   document.getElementById("login-pass").value  = "";
@@ -699,7 +729,7 @@ async function saveGasto() {
 async function cargarHoy() {
   const el = document.getElementById("gastos-list");
   el.innerHTML = skels(3);
-  try { const d = await lmb("/gastos", "GET", null, "fecha=" + hoy()); renderLista(d.gastos || [], el, "recent-count"); }
+  try { const d = await lmb("/gastos", "GET", null, "fecha=" + hoy()); renderLista(d.gastos || [], el, "recent-count", false); }
   catch(e) { el.innerHTML = empty("⚠️", e.message); }
 }
 
@@ -715,38 +745,77 @@ async function cargarResumen() {
   } catch(e) { console.warn("Resumen:", e.message); }
 }
 
+function onFiltroMesChange() {
+  // Al seleccionar mes, limpiar día
+  document.getElementById("filtro-dia").value = "";
+  consultarGastos();
+}
+
+function onFiltroDiaChange() {
+  const dia = document.getElementById("filtro-dia").value;
+  if (dia) {
+    // Al seleccionar día, sincronizar el mes automáticamente
+    document.getElementById("filtro-mes").value = dia.substring(0, 7);
+  }
+  consultarGastos();
+}
+
 async function consultarGastos() {
   const mes = document.getElementById("filtro-mes").value;
+  const dia = document.getElementById("filtro-dia").value;
   const cat = document.getElementById("filtro-cat").value;
-  if (!mes) return;
+  if (!mes && !dia) return;
   const listEl = document.getElementById("consulta-list"), resEl = document.getElementById("consulta-resumen");
   listEl.innerHTML = skels(5);
-  let qs = "mes=" + mes; if (cat) qs += "&categoria=" + cat;
+  let qs = "";
+  if (dia)      qs = "fecha=" + dia;
+  else if (mes) qs = "mes=" + mes;
+  if (cat) qs += "&categoria=" + cat;
   try {
     const data = await lmb("/gastos", "GET", null, qs);
     const gastos = data.gastos || [];
     const total  = gastos.reduce((s,g) => s + parseFloat(g.monto||0), 0);
-    resEl.innerHTML = `<div class="form-card" style="padding:16px 20px;margin-bottom:0;display:flex;gap:24px;align-items:center;flex-wrap:wrap"><span style="font-size:13px;color:var(--muted)">${fmtMes(mes)}</span><span style="font-family:var(--font-display);font-size:18px;font-weight:700">S/ ${total.toFixed(2)}</span><span style="font-size:13px;color:var(--muted)">${gastos.length} gasto${gastos.length!==1?"s":""}</span></div>`;
-    renderLista(gastos, listEl, null);
+    const periodo = dia ? fmtFecha(dia) : fmtMes(mes);
+    resEl.innerHTML = `<div class="form-card" style="padding:16px 20px;margin-bottom:0;display:flex;gap:24px;align-items:center;flex-wrap:wrap"><span style="font-size:13px;color:var(--muted)">${periodo}</span><span style="font-family:var(--font-display);font-size:18px;font-weight:700">S/ ${total.toFixed(2)}</span><span style="font-size:13px;color:var(--muted)">${gastos.length} gasto${gastos.length!==1?"s":""}</span></div>`;
+    renderLista(gastos, listEl, null, true);
   } catch(e) { listEl.innerHTML = empty("⚠️", e.message); }
 }
 
 async function deleteGasto(gastoId) {
   if (!confirm("¿Eliminar este gasto?")) return;
-  try { await lmb("/gastos/" + encodeURIComponent(gastoId), "DELETE"); toast("Gasto eliminado", "error"); cargarResumen(); cargarHoy(); }
-  catch(e) { toast("Error: " + e.message, "error"); }
+  try {
+    await lmb("/gastos/" + encodeURIComponent(gastoId), "DELETE");
+    // Quitar el item del DOM inmediatamente sin recargar la lista
+    const items = document.querySelectorAll(".expense-item");
+    items.forEach(item => {
+      const btn = item.querySelector(".expense-delete");
+      if (btn && btn.getAttribute("onclick").includes(gastoId)) {
+        item.style.transition = "opacity 0.3s, transform 0.3s";
+        item.style.opacity = "0";
+        item.style.transform = "translateX(20px)";
+        setTimeout(() => item.remove(), 300);
+      }
+    });
+    toast("Gasto eliminado ✓", "success");
+    // Solo actualizar el resumen en silencio
+    cargarResumen();
+  } catch(e) { toast("Error: " + e.message, "error"); }
 }
 
-function renderLista(gastos, el, countId) {
+function renderLista(gastos, el, countId, allowDelete = false) {
   if (countId) document.getElementById(countId).textContent = gastos.length + " gasto" + (gastos.length!==1?"s":"");
   if (!gastos.length) { el.innerHTML = empty("📋", "Sin gastos para este período."); return; }
-  el.innerHTML = `<div class="expense-list">${gastos.map(cardHTML).join("")}</div>`;
+  el.innerHTML = `<div class="expense-list">${gastos.map(g => cardHTML(g, allowDelete)).join("")}</div>`;
 }
 
-function cardHTML(g) {
+function cardHTML(g, allowDelete = false) {
   const cat  = CAT[g.categoria] || CAT.otro;
   const desc = g.descripcion ? `<span style="font-size:12px;color:var(--muted);display:block;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:320px">${esc(g.descripcion)}</span>` : "";
   const lugar = g.lugar ? `<span class="expense-date">📍 ${esc(g.lugar)}</span>` : "";
+  const deleteBtn = allowDelete ? `
+    <button class="expense-delete" onclick="deleteGasto('${g.gastoId}')" title="Eliminar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+    </button>` : "";
   return `<div class="expense-item">
     <div class="expense-cat-dot">${cat.e}</div>
     <div class="expense-info">
@@ -755,9 +824,7 @@ function cardHTML(g) {
       ${desc}
     </div>
     <div class="expense-amount">S/ ${parseFloat(g.monto).toFixed(2)}</div>
-    <button class="expense-delete" onclick="deleteGasto('${g.gastoId}')" title="Eliminar">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
-    </button>
+    ${deleteBtn}
   </div>`;
 }
 
