@@ -716,7 +716,6 @@ function doLogin() {
 }
 
 function doNewPassword() {
-  // Leer SIN trim() para no cortar símbolos al final como el punto de "Pelusa112019."
   const pass1 = document.getElementById("new-pass")?.value  || "";
   const pass2 = document.getElementById("new-pass2")?.value || "";
   let ok = true;
@@ -726,13 +725,18 @@ function doNewPassword() {
   if (!ok) return;
   if (!cognitoUserPendingNewPass) { showScreen("login"); return; }
   setBtn("btn-newpass", "Guardando...", true);
-  cognitoUserPendingNewPass.completeNewPasswordChallenge(pass1, { name: cognitoUserPendingNewPass.username }, {
+
+  // Cognito requiere los atributos obligatorios — enviamos name con el username
+  const requiredAttribs = { name: cognitoUserPendingNewPass.getUsername() };
+
+  cognitoUserPendingNewPass.completeNewPasswordChallenge(pass1, requiredAttribs, {
     onSuccess(s) {
       cognitoUser = cognitoUserPendingNewPass;
       cognitoUserPendingNewPass = null;
       setToken(s);
+      localStorage.setItem("cg_login_time", Date.now().toString());
       const p = s.getIdToken().decodePayload();
-      setUserUI(p.name || p.email || "Usuario");
+      setUserUI(p.name || p.email || p["cognito:username"] || "Usuario");
       showApp();
     },
     onFailure(e) {
@@ -1037,8 +1041,9 @@ async function deleteGasto(gastoId) {
       }
     });
     toast("Gasto eliminado ✓", "success");
-    // Solo actualizar el resumen en silencio
+    // Actualizar resumen Y lista de hoy en silencio
     cargarResumen();
+    cargarHoy();
   } catch(e) { toast("Error: " + e.message, "error"); }
 }
 
