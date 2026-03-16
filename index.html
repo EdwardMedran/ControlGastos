@@ -193,8 +193,8 @@
       .rc-label { font-size: 10px; }
       /* La tercera tarjeta ocupa el ancho completo */
       .resumen-card:nth-child(3) { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-      .resumen-card:nth-child(3) .rc-value { font-size: 16px; white-space: normal; overflow: visible; }
-      .resumen-card:nth-child(3) .rc-sub { margin-top: 0; }
+      .resumen-card:nth-child(3) .rc-value { font-size: 16px; white-space: normal; overflow: visible; flex: 1; }
+      .resumen-card:nth-child(3) .rc-sub { margin-top: 0; font-size: 15px; font-weight: 700; color: var(--text); white-space: nowrap; flex-shrink: 0; }
 
       /* FORM */
       .form-card { padding: 20px 16px; border-radius: 16px; }
@@ -496,8 +496,16 @@ function showApp() {
   });
   document.getElementById("app").style.display = "block";
   document.getElementById("fecha").value = hoy();
+  // Siempre arranca en Registrar sin importar desde dónde se cerró sesión
+  document.getElementById("view-registrar").style.display = "block";
+  document.getElementById("view-consultar").style.display = "none";
+  document.getElementById("nav-reg").classList.add("active");
+  document.getElementById("nav-con").classList.remove("active");
+  document.getElementById("bnav-reg").classList.add("active");
+  document.getElementById("bnav-con").classList.remove("active");
   startSessionTimer();
-  cargarResumen(); cargarHoy();
+  cargarResumen();
+  cargarHoy();
 }
 
 function showView(v) {
