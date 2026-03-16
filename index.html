@@ -99,8 +99,8 @@
     .resumen-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 32px; }
     .resumen-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 18px 20px; }
     .rc-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
-    .rc-value { font-family: var(--font-display); font-size: 22px; font-weight: 800; color: var(--text); }
-    .rc-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .rc-value { font-family: var(--font-display); font-size: 20px; font-weight: 800; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .rc-sub { font-size: 12px; color: var(--muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
     /* FORM */
     .form-card { background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 36px; box-shadow: 0 16px 48px rgba(0,0,0,0.3); }
@@ -158,12 +158,12 @@
     #toast.error   { border-color: rgba(255,107,107,0.3); }
 
     @media (max-width: 600px) {
-      /* AUTH SCREENS */
-      .screen { padding: 16px; align-items: flex-end; }
-      .auth-card { padding: 32px 24px 40px; border-radius: 24px 24px 0 0; max-width: 100%; margin-bottom: 0; }
+      /* AUTH SCREENS — centrado vertical */
+      .screen { padding: 20px 16px; align-items: center; }
+      .auth-card { padding: 28px 22px 32px; border-radius: 20px; max-width: 100%; }
       .auth-title { font-size: 24px; }
-      .auth-sub { margin-bottom: 24px; }
-      .brand { margin-bottom: 24px; }
+      .auth-sub { margin-bottom: 20px; }
+      .brand { margin-bottom: 20px; }
 
       /* INPUTS MÁS GRANDES PARA TOUCH */
       .field input, .field select, .field textarea { font-size: 16px !important; padding: 15px 16px; }
@@ -190,7 +190,8 @@
       .resumen-grid { grid-template-columns: repeat(3, minmax(130px, 1fr)); gap: 10px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 20px; scrollbar-width: none; }
       .resumen-grid::-webkit-scrollbar { display: none; }
       .resumen-card { padding: 14px 16px; min-width: 130px; }
-      .rc-value { font-size: 18px; }
+      .rc-value { font-size: 16px; }
+      .rc-label { font-size: 10px; }
 
       /* FORM */
       .form-card { padding: 20px 16px; border-radius: 16px; }
@@ -724,7 +725,13 @@ function cardHTML(g) {
 
 // UTILS
 const g      = id => document.getElementById(id)?.value?.trim() || "";
-const hoy    = ()  => new Date().toISOString().split("T")[0];
+const hoy = () => {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+};
 const esc    = s   => (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 const setErr = id  => document.getElementById(id)?.classList.add("error");
 const clrErr = ids => ids.forEach(id => document.getElementById(id)?.classList.remove("error"));
