@@ -154,6 +154,7 @@
     .cat-inversion   { background: rgba(74,222,128,0.15);  color: #4ade80; }
     .cat-otros       { background: rgba(122,122,142,0.15); color: #b0b0c0; }
     .cat-carrito     { background: rgba(251,113,133,0.15); color: #fb7185; }
+    .cat-tarjeta     { background: rgba(99,102,241,0.15);  color: #818cf8; }
 
     .skeleton { background: linear-gradient(90deg, var(--surface2) 25%, var(--border) 50%, var(--surface2) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
     @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
@@ -389,6 +390,7 @@
               <option value="inversion">📈 Inversión</option>
               <option value="otros">📦 Otros</option>
               <option value="carrito">🚗 Amor al carrito</option>
+              <option value="tarjeta">💳 Tarjeta de Crédito</option>
             </select>
             <span class="field-error">Selecciona una categoría</span>
           </div>
@@ -468,6 +470,7 @@
             <option value="inversion">📈 Inversión</option>
             <option value="otros">📦 Otros</option>
             <option value="carrito">🚗 Amor al carrito</option>
+            <option value="tarjeta">💳 Tarjeta de Crédito</option>
           </select>
         </div>
       </div>
@@ -574,7 +577,8 @@ const CAT = {
   estudios:    { e:'📚', l:'Estudios',        c:'cat-estudios'    },
   inversion:   { e:'📈', l:'Inversión',       c:'cat-inversion'   },
   otros:       { e:'📦', l:'Otros',           c:'cat-otros'       },
-  carrito:     { e:'🚗', l:'Amor al carrito', c:'cat-carrito'     },
+  carrito:     { e:'🚗', l:'Amor al carrito',   c:'cat-carrito'  },
+  tarjeta:     { e:'💳', l:'Tarjeta de Crédito', c:'cat-tarjeta'  },
 };
 const PAY = { efectivo:'💵 Efectivo', tarjeta_debito:'💳 Débito', tarjeta_credito:'🏦 Crédito', yape_plin:'📱 Yape/Plin' };
 
@@ -897,7 +901,7 @@ let estMes = hoy().substring(0,7);
 const CAT_COLORS = {
   hormiga: '#ff7eb3', combustible: '#ffd166', salidas: '#5de4c0',
   comida: '#fb923c', fijos: '#f43f5e', estudios: '#38bdf8',
-  inversion: '#4ade80', otros: '#94a3b8', carrito: '#fb7185'
+  inversion: '#4ade80', otros: '#94a3b8', carrito: '#fb7185', tarjeta: '#818cf8'
 };
 const PAY_ICONS = { efectivo:'💵', tarjeta_debito:'💳', tarjeta_credito:'🏦', yape_plin:'📱' };
 const DIAS_SEMANA = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
