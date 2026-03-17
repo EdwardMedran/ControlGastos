@@ -156,8 +156,18 @@
     .cat-carrito     { background: rgba(251,113,133,0.15); color: #fb7185; }
     .cat-tarjeta     { background: rgba(99,102,241,0.15);  color: #818cf8; }
 
-    .skeleton { background: linear-gradient(90deg, var(--surface2) 25%, var(--border) 50%, var(--surface2) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
-    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    /* MODAL EDITAR */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 300; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
+    .modal-overlay.open { display: flex; }
+    .modal-card { background: var(--surface); border: 1px solid rgba(249,115,22,0.2); border-radius: 24px; padding: 28px 24px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: 0 32px 80px rgba(0,0,0,0.6); animation: modalIn 0.25s cubic-bezier(0.34,1.56,0.64,1); }
+    @keyframes modalIn { from { opacity:0; transform: scale(0.92) translateY(20px); } to { opacity:1; transform: scale(1) translateY(0); } }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+    .modal-title { font-family: var(--font-display); font-size: 20px; font-weight: 800; }
+    .modal-close { background: none; border: none; color: var(--muted); cursor: pointer; padding: 6px; border-radius: 8px; font-size: 20px; line-height: 1; transition: all 0.2s; }
+    .modal-close:hover { color: var(--danger); background: rgba(244,63,94,0.1); }
+    .modal-actions { display: flex; gap: 12px; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); }
+    .modal-actions .btn-submit { flex: 1; justify-content: center; padding: 14px; }
+    .modal-actions .btn-clear  { flex: 0 0 auto; padding: 14px 20px; }
 
     /* ESTADÍSTICAS */
     .est-kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
@@ -525,6 +535,75 @@
     </div>
 
   </main>
+</div>
+
+<!-- MODAL EDITAR GASTO -->
+<div class="modal-overlay" id="modal-editar" onclick="if(event.target===this)cerrarModal()">
+  <div class="modal-card">
+    <div class="modal-header">
+      <span class="modal-title">Editar Gasto</span>
+      <button class="modal-close" onclick="cerrarModal()">✕</button>
+    </div>
+    <input type="hidden" id="edit-gastoId" />
+    <div class="grid-2">
+      <div class="field" id="ef-titulo">
+        <label>Título *</label>
+        <input type="text" id="edit-titulo" maxlength="60" />
+        <span class="field-error">Requerido</span>
+      </div>
+      <div class="field" id="ef-cat">
+        <label>Categoría *</label>
+        <select id="edit-categoria">
+          <option value="hormiga">🐜 Gastos Hormiga</option>
+          <option value="combustible">⛽ Combustible</option>
+          <option value="salidas">🎉 Salidas</option>
+          <option value="comida">🍽️ Comida</option>
+          <option value="fijos">🏠 Gastos Fijos</option>
+          <option value="estudios">📚 Estudios</option>
+          <option value="inversion">📈 Inversión</option>
+          <option value="otros">📦 Otros</option>
+          <option value="carrito">🚗 Amor al carrito</option>
+          <option value="tarjeta">💳 Tarjeta de Crédito</option>
+        </select>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="field" id="ef-monto">
+        <label>Monto *</label>
+        <div class="amount-wrap"><span class="currency">S/</span><input type="number" id="edit-monto" step="0.01" min="0" /></div>
+        <span class="field-error">Monto inválido</span>
+      </div>
+      <div class="field" id="ef-fecha">
+        <label>Fecha *</label>
+        <input type="date" id="edit-fecha" />
+        <span class="field-error">Requerida</span>
+      </div>
+    </div>
+    <div class="field">
+      <label>Método de pago</label>
+      <div class="pay-toggle">
+        <input type="radio" name="edit-pago" id="ep1" value="efectivo"        class="pay-option" /><label class="pay-label" for="ep1">💵 Efectivo</label>
+        <input type="radio" name="edit-pago" id="ep2" value="tarjeta_debito"  class="pay-option" /><label class="pay-label" for="ep2">💳 Débito</label>
+        <input type="radio" name="edit-pago" id="ep3" value="tarjeta_credito" class="pay-option" /><label class="pay-label" for="ep3">🏦 Crédito</label>
+        <input type="radio" name="edit-pago" id="ep4" value="yape_plin"       class="pay-option" /><label class="pay-label" for="ep4">📱 Yape/Plin</label>
+      </div>
+    </div>
+    <div class="field">
+      <label>Descripción</label>
+      <textarea id="edit-descripcion" maxlength="200" style="min-height:70px"></textarea>
+    </div>
+    <div class="grid-2">
+      <div class="field"><label>Lugar</label><input type="text" id="edit-lugar" maxlength="60" /></div>
+      <div class="field"><label>Etiqueta</label><input type="text" id="edit-etiqueta" maxlength="30" /></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-clear" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-submit" onclick="guardarEdicion()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Guardar cambios
+      </button>
+    </div>
+  </div>
 </div>
 
 <div id="toast"><span id="ti">✅</span><span id="tm">—</span></div>
@@ -1033,6 +1112,71 @@ function renderEstadisticas(gastos) {
   document.getElementById("est-top5").innerHTML = top5HTML;
 }
 
+// ── MODAL EDITAR ─────────────────────────────────────────
+function abrirEdicion(g) {
+  document.getElementById("edit-gastoId").value     = g.gastoId;
+  document.getElementById("edit-titulo").value      = g.titulo || "";
+  document.getElementById("edit-categoria").value   = g.categoria || "otros";
+  document.getElementById("edit-monto").value       = parseFloat(g.monto || 0).toFixed(2);
+  document.getElementById("edit-fecha").value       = g.fecha || "";
+  document.getElementById("edit-descripcion").value = g.descripcion || "";
+  document.getElementById("edit-lugar").value       = g.lugar || "";
+  document.getElementById("edit-etiqueta").value    = g.etiqueta || "";
+  // Método de pago
+  const pago = g.metodoPago || "efectivo";
+  const radio = document.querySelector(`input[name="edit-pago"][value="${pago}"]`);
+  if (radio) radio.checked = true;
+  // Limpiar errores
+  clrErr(["ef-titulo","ef-cat","ef-monto","ef-fecha"]);
+  // Abrir modal
+  document.getElementById("modal-editar").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function cerrarModal() {
+  document.getElementById("modal-editar").classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+async function guardarEdicion() {
+  const gastoId   = document.getElementById("edit-gastoId").value;
+  const titulo    = document.getElementById("edit-titulo").value.trim();
+  const categoria = document.getElementById("edit-categoria").value;
+  const montoRaw  = document.getElementById("edit-monto").value;
+  const fecha     = document.getElementById("edit-fecha").value;
+  let ok = true;
+  clrErr(["ef-titulo","ef-cat","ef-monto","ef-fecha"]);
+  if (!titulo)                     { setErr("ef-titulo"); ok = false; }
+  if (!categoria)                  { setErr("ef-cat");    ok = false; }
+  if (!montoRaw || +montoRaw <= 0) { setErr("ef-monto");  ok = false; }
+  if (!fecha)                      { setErr("ef-fecha");  ok = false; }
+  if (!ok) return;
+
+  const btn = document.querySelector("#modal-editar .btn-submit");
+  btn.disabled = true; btn.innerHTML = "⏳ Guardando...";
+
+  try {
+    await lmb("/gastos/" + encodeURIComponent(gastoId), "PUT", {
+      titulo, categoria,
+      monto:       parseFloat(montoRaw),
+      fecha,
+      descripcion: document.getElementById("edit-descripcion").value.trim(),
+      lugar:       document.getElementById("edit-lugar").value.trim(),
+      etiqueta:    document.getElementById("edit-etiqueta").value.trim(),
+      metodoPago:  document.querySelector("input[name='edit-pago']:checked")?.value || "efectivo",
+    });
+    cerrarModal();
+    toast("Gasto actualizado ✓", "success");
+    cargarResumen();
+    consultarGastos();
+  } catch(e) {
+    toast("Error: " + e.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar cambios`;
+  }
+}
+
 function onFiltroMesChange() {
   consultarGastos();
 }
@@ -1103,6 +1247,10 @@ function cardHTML(g, allowDelete = false) {
     <button class="expense-delete" onclick="deleteGasto('${g.gastoId}')" title="Eliminar">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
     </button>` : "";
+  const editBtn = allowDelete ? `
+    <button class="expense-delete" onclick="abrirEdicion(${JSON.stringify(g).replace(/"/g,'&quot;')})" title="Editar" style="color:var(--accent2)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+    </button>` : "";
   return `<div class="expense-item">
     <div class="expense-cat-dot">${cat.e}</div>
     <div class="expense-info">
@@ -1111,6 +1259,7 @@ function cardHTML(g, allowDelete = false) {
       ${desc}
     </div>
     <div class="expense-amount">S/ ${parseFloat(g.monto).toFixed(2)}</div>
+    ${editBtn}
     ${deleteBtn}
   </div>`;
 }
