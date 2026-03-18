@@ -16,11 +16,10 @@
       "purpose": "any"
     },
     {
-      "src": "/ControlGastos/icon.png",
+      "src": "/ControlGastos/Icon.png",
       "sizes": "any",
       "type": "image/png",
       "purpose": "maskable"
     }
   ]
 }
-
