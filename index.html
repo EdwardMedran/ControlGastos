@@ -156,7 +156,34 @@
     .cat-carrito     { background: rgba(251,113,133,0.15); color: #fb7185; }
     .cat-tarjeta     { background: rgba(99,102,241,0.15);  color: #818cf8; }
 
-    /* MODAL EDITAR */
+    /* PRÉSTAMOS Y AHORROS */
+    .modulo-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+    .modulo-tab { flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: none; color: var(--muted); font-family: var(--font-display); font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; text-align: center; }
+    .modulo-tab.active { border-color: var(--accent); background: rgba(249,115,22,0.1); color: var(--accent); }
+    .prestamo-item, .ahorro-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; display: flex; align-items: center; gap: 14px; margin-bottom: 10px; animation: slideIn 0.3s ease; }
+    .prestamo-icon, .ahorro-icon { width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .prestamo-icon.preste     { background: rgba(244,63,94,0.12); }
+    .prestamo-icon.me_prestaron { background: rgba(34,197,94,0.12); }
+    .ahorro-icon.deposito { background: rgba(34,197,94,0.12); }
+    .ahorro-icon.retiro   { background: rgba(244,63,94,0.12); }
+    .prestamo-info, .ahorro-info { flex: 1; min-width: 0; }
+    .prestamo-nombre { font-weight: 600; font-size: 15px; }
+    .prestamo-meta, .ahorro-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .prestamo-monto { font-family: var(--font-display); font-size: 17px; font-weight: 700; flex-shrink: 0; }
+    .prestamo-monto.preste      { color: var(--danger); }
+    .prestamo-monto.me_prestaron{ color: var(--success); }
+    .ahorro-monto { font-family: var(--font-display); font-size: 17px; font-weight: 700; flex-shrink: 0; }
+    .ahorro-monto.deposito { color: var(--success); }
+    .ahorro-monto.retiro   { color: var(--danger); }
+    .total-ahorro-card { background: linear-gradient(135deg, rgba(249,115,22,0.15), rgba(250,204,21,0.1)); border: 1px solid rgba(249,115,22,0.3); border-radius: 20px; padding: 24px; text-align: center; margin-bottom: 24px; }
+    .total-ahorro-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    .total-ahorro-valor { font-family: var(--font-display); font-size: 36px; font-weight: 800; color: var(--text); }
+    .resumen-prestamos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .rp-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; }
+    .rp-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+    .rp-value { font-family: var(--font-display); font-size: 18px; font-weight: 800; }
+    .rp-value.debe { color: var(--danger); }
+    .rp-value.deben { color: var(--success); }
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 300; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
     .modal-overlay.open { display: flex; }
     .modal-card { background: var(--surface); border: 1px solid rgba(249,115,22,0.2); border-radius: 24px; padding: 28px 24px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: 0 32px 80px rgba(0,0,0,0.6); animation: modalIn 0.25s cubic-bezier(0.34,1.56,0.64,1); }
@@ -339,6 +366,8 @@
       <button class="nav-link active" id="nav-reg" onclick="showView('registrar')">Registrar</button>
       <button class="nav-link"        id="nav-con" onclick="showView('consultar')">Consultar</button>
       <button class="nav-link"        id="nav-est" onclick="showView('estadisticas')">Estadísticas</button>
+      <button class="nav-link"        id="nav-pre" onclick="showView('prestamos')">Préstamos</button>
+      <button class="nav-link"        id="nav-aho" onclick="showView('ahorros')">Ahorros</button>
     </div>
     <div class="nav-right">
       <div class="nav-user">
@@ -534,6 +563,109 @@
       </div>
     </div>
 
+    <!-- VISTA PRÉSTAMOS -->
+    <div id="view-prestamos" style="display:none">
+      <div class="page-header"><h1>Préstamos</h1><p>Registra lo que prestas y lo que te prestan</p></div>
+
+      <!-- Resumen -->
+      <div class="resumen-prestamos">
+        <div class="rp-card"><div class="rp-label">Yo debo</div><div class="rp-value debe" id="pres-debo">S/ 0.00</div></div>
+        <div class="rp-card"><div class="rp-label">Me deben</div><div class="rp-value deben" id="pres-deben">S/ 0.00</div></div>
+      </div>
+
+      <!-- Formulario -->
+      <div class="form-card" style="margin-bottom:24px">
+        <div class="section-title">Nuevo préstamo</div>
+        <div class="modulo-tabs">
+          <button class="modulo-tab active" id="tab-preste"       onclick="setTipoPrestamo('preste')">💸 Presté dinero</button>
+          <button class="modulo-tab"        id="tab-me_prestaron" onclick="setTipoPrestamo('me_prestaron')">🤝 Me prestaron</button>
+        </div>
+        <input type="hidden" id="pres-tipo" value="preste" />
+        <div class="grid-2">
+          <div class="field" id="fp-nombre">
+            <label>Nombre de la persona *</label>
+            <input type="text" id="pres-nombre" placeholder="Ej: Juan, Mamá..." maxlength="60" />
+            <span class="field-error">Nombre requerido</span>
+          </div>
+          <div class="field" id="fp-monto">
+            <label>Monto *</label>
+            <div class="amount-wrap"><span class="currency">S/</span><input type="number" id="pres-monto" placeholder="0.00" step="0.01" min="0" /></div>
+            <span class="field-error">Monto inválido</span>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="field" id="fp-fecha">
+            <label>Fecha *</label>
+            <input type="date" id="pres-fecha" />
+            <span class="field-error">Fecha requerida</span>
+          </div>
+          <div class="field">
+            <label>Nota (opcional)</label>
+            <input type="text" id="pres-nota" placeholder="Ej: Para el almuerzo..." maxlength="100" />
+          </div>
+        </div>
+        <div class="submit-area">
+          <button class="btn-clear" onclick="limpiarPrestamo()">Limpiar</button>
+          <button class="btn-submit" id="btn-pres-save" onclick="guardarPrestamo()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Registrar
+          </button>
+        </div>
+      </div>
+
+      <!-- Lista -->
+      <div class="recent-header"><h2>Pendientes</h2><span class="recent-count" id="pres-count">—</span></div>
+      <div id="pres-list"><div class="empty-state"><div class="empty-icon">🤝</div><p>Sin préstamos pendientes</p></div></div>
+    </div>
+
+    <!-- VISTA AHORROS -->
+    <div id="view-ahorros" style="display:none">
+      <div class="page-header"><h1>Ahorros</h1><p>Registra tus movimientos y ve tu total acumulado</p></div>
+
+      <!-- Total -->
+      <div class="total-ahorro-card">
+        <div class="total-ahorro-label">💰 Total ahorrado</div>
+        <div class="total-ahorro-valor" id="ahorro-total">S/ 0.00</div>
+      </div>
+
+      <!-- Formulario -->
+      <div class="form-card" style="margin-bottom:24px">
+        <div class="section-title">Nuevo movimiento</div>
+        <div class="modulo-tabs">
+          <button class="modulo-tab active" id="tab-deposito" onclick="setTipoAhorro('deposito')">➕ Depositar</button>
+          <button class="modulo-tab"        id="tab-retiro"   onclick="setTipoAhorro('retiro')">➖ Retirar</button>
+        </div>
+        <input type="hidden" id="aho-tipo" value="deposito" />
+        <div class="grid-2">
+          <div class="field" id="fa-monto">
+            <label>Monto *</label>
+            <div class="amount-wrap"><span class="currency">S/</span><input type="number" id="aho-monto" placeholder="0.00" step="0.01" min="0" /></div>
+            <span class="field-error">Monto inválido</span>
+          </div>
+          <div class="field" id="fa-fecha">
+            <label>Fecha *</label>
+            <input type="date" id="aho-fecha" />
+            <span class="field-error">Fecha requerida</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>Nota (opcional)</label>
+          <input type="text" id="aho-nota" placeholder="Ej: Ahorro de quincena, emergencia..." maxlength="100" />
+        </div>
+        <div class="submit-area">
+          <button class="btn-clear" onclick="limpiarAhorro()">Limpiar</button>
+          <button class="btn-submit" id="btn-aho-save" onclick="guardarAhorro()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Registrar
+          </button>
+        </div>
+      </div>
+
+      <!-- Lista -->
+      <div class="recent-header"><h2>Movimientos</h2><span class="recent-count" id="aho-count">—</span></div>
+      <div id="aho-list"><div class="empty-state"><div class="empty-icon">💰</div><p>Sin movimientos registrados</p></div></div>
+    </div>
+
   </main>
 </div>
 
@@ -721,14 +853,20 @@ function showApp() {
     el.style.display = "none";
   });
   document.getElementById("app").style.display = "block";
-  document.getElementById("fecha").value = hoy();
+  document.getElementById("fecha").value     = hoy();
+  document.getElementById("pres-fecha").value = hoy();
+  document.getElementById("aho-fecha").value  = hoy();
   // Siempre arranca en Registrar sin importar desde dónde se cerró sesión
-  document.getElementById("view-registrar").style.display = "block";
-  document.getElementById("view-consultar").style.display = "none";
+  document.getElementById("view-registrar").style.display   = "block";
+  document.getElementById("view-consultar").style.display   = "none";
   document.getElementById("view-estadisticas").style.display = "none";
+  document.getElementById("view-prestamos").style.display   = "none";
+  document.getElementById("view-ahorros").style.display     = "none";
   document.getElementById("nav-reg").classList.add("active");
   document.getElementById("nav-con").classList.remove("active");
   document.getElementById("nav-est").classList.remove("active");
+  document.getElementById("nav-pre")?.classList.remove("active");
+  document.getElementById("nav-aho")?.classList.remove("active");
   document.getElementById("bnav-reg").classList.add("active");
   document.getElementById("bnav-con").classList.remove("active");
   document.getElementById("bnav-est").classList.remove("active");
@@ -738,14 +876,14 @@ function showApp() {
 }
 
 function showView(v) {
-  ["registrar","consultar","estadisticas"].forEach(id => {
+  ["registrar","consultar","estadisticas","prestamos","ahorros"].forEach(id => {
     document.getElementById("view-" + id).style.display = v === id ? "block" : "none";
   });
-  // Nav superior
-  document.getElementById("nav-reg").classList.toggle("active", v === "registrar");
-  document.getElementById("nav-con").classList.toggle("active", v === "consultar");
-  document.getElementById("nav-est").classList.toggle("active", v === "estadisticas");
-  // Nav inferior móvil
+  ["nav-reg","nav-con","nav-est","nav-pre","nav-aho"].forEach(id => {
+    document.getElementById(id)?.classList.remove("active");
+  });
+  const navMap = { registrar:"nav-reg", consultar:"nav-con", estadisticas:"nav-est", prestamos:"nav-pre", ahorros:"nav-aho" };
+  document.getElementById(navMap[v])?.classList.add("active");
   document.getElementById("bnav-reg").classList.toggle("active", v === "registrar");
   document.getElementById("bnav-con").classList.toggle("active", v === "consultar");
   document.getElementById("bnav-est").classList.toggle("active", v === "estadisticas");
@@ -755,6 +893,8 @@ function showView(v) {
     consultarGastos();
   }
   if (v === "estadisticas") cargarEstadisticas();
+  if (v === "prestamos")    cargarPrestamos();
+  if (v === "ahorros")      cargarAhorros();
 }
 
 function setUserUI(n) { document.getElementById("user-name").textContent = n; document.getElementById("user-avatar").textContent = n.charAt(0).toUpperCase(); }
@@ -1175,6 +1315,144 @@ async function guardarEdicion() {
     btn.disabled = false;
     btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Guardar cambios`;
   }
+}
+
+// ══════════════════════════════════════════════════════════
+//  PRÉSTAMOS
+// ══════════════════════════════════════════════════════════
+function setTipoPrestamo(tipo) {
+  document.getElementById("pres-tipo").value = tipo;
+  document.getElementById("tab-preste").classList.toggle("active",       tipo === "preste");
+  document.getElementById("tab-me_prestaron").classList.toggle("active", tipo === "me_prestaron");
+}
+
+function limpiarPrestamo() {
+  ["pres-nombre","pres-monto","pres-nota"].forEach(id => { const el=document.getElementById(id); if(el) el.value=""; });
+  document.getElementById("pres-fecha").value = hoy();
+  setTipoPrestamo("preste");
+  clrErr(["fp-nombre","fp-monto","fp-fecha"]);
+}
+
+async function guardarPrestamo() {
+  const nombre = g("pres-nombre"), monto = g("pres-monto"), fecha = g("pres-fecha");
+  const tipo   = document.getElementById("pres-tipo").value;
+  let ok = true;
+  clrErr(["fp-nombre","fp-monto","fp-fecha"]);
+  if (!nombre)                    { setErr("fp-nombre"); ok = false; }
+  if (!monto || +monto <= 0)      { setErr("fp-monto");  ok = false; }
+  if (!fecha)                     { setErr("fp-fecha");  ok = false; }
+  if (!ok) return;
+  const btn = document.getElementById("btn-pres-save");
+  btn.disabled = true; btn.innerHTML = "⏳ Guardando...";
+  try {
+    await lmb("/prestamos", "POST", { nombre, monto: parseFloat(monto), fecha, tipo, nota: g("pres-nota") });
+    limpiarPrestamo(); toast("Préstamo registrado ✓", "success"); cargarPrestamos();
+  } catch(e) { toast("Error: " + e.message, "error"); }
+  finally { btn.disabled = false; btn.innerHTML = "Registrar"; }
+}
+
+async function cargarPrestamos() {
+  const el = document.getElementById("pres-list");
+  el.innerHTML = skels(3);
+  try {
+    const data = await lmb("/prestamos");
+    const lista = data.prestamos || [];
+    // Calcular resumen
+    let debo = 0, deben = 0;
+    lista.forEach(p => {
+      if (p.tipo === "me_prestaron") debo  += parseFloat(p.monto || 0);
+      else                          deben += parseFloat(p.monto || 0);
+    });
+    document.getElementById("pres-debo").textContent  = "S/ " + debo.toFixed(2);
+    document.getElementById("pres-deben").textContent = "S/ " + deben.toFixed(2);
+    document.getElementById("pres-count").textContent = lista.length + " pendiente" + (lista.length !== 1 ? "s" : "");
+    if (!lista.length) { el.innerHTML = `<div class="empty-state"><div class="empty-icon">🤝</div><p>Sin préstamos pendientes</p></div>`; return; }
+    el.innerHTML = lista.map(p => {
+      const esMePrestaron = p.tipo === "me_prestaron";
+      return `<div class="prestamo-item">
+        <div class="prestamo-icon ${p.tipo}">${esMePrestaron ? "🤝" : "💸"}</div>
+        <div class="prestamo-info">
+          <div class="prestamo-nombre">${esc(p.nombre)}</div>
+          <div class="prestamo-meta">${esMePrestaron ? "Me prestó" : "Le presté"} · ${fmtFecha(p.fecha)}${p.nota ? " · " + esc(p.nota) : ""}</div>
+        </div>
+        <div class="prestamo-monto ${p.tipo}">${esMePrestaron ? "-" : "+"} S/ ${parseFloat(p.monto).toFixed(2)}</div>
+        <button class="expense-delete" onclick="eliminarPrestamo('${p.prestamoId}')" title="Saldado / Eliminar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+        </button>
+      </div>`;
+    }).join("");
+  } catch(e) { el.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><p>${e.message}</p></div>`; }
+}
+
+async function eliminarPrestamo(id) {
+  if (!confirm("¿Marcar como saldado y eliminar?")) return;
+  try { await lmb("/prestamos/" + encodeURIComponent(id), "DELETE"); toast("Préstamo saldado ✓", "success"); cargarPrestamos(); }
+  catch(e) { toast("Error: " + e.message, "error"); }
+}
+
+// ══════════════════════════════════════════════════════════
+//  AHORROS
+// ══════════════════════════════════════════════════════════
+function setTipoAhorro(tipo) {
+  document.getElementById("aho-tipo").value = tipo;
+  document.getElementById("tab-deposito").classList.toggle("active", tipo === "deposito");
+  document.getElementById("tab-retiro").classList.toggle("active",   tipo === "retiro");
+}
+
+function limpiarAhorro() {
+  ["aho-monto","aho-nota"].forEach(id => { const el=document.getElementById(id); if(el) el.value=""; });
+  document.getElementById("aho-fecha").value = hoy();
+  setTipoAhorro("deposito");
+  clrErr(["fa-monto","fa-fecha"]);
+}
+
+async function guardarAhorro() {
+  const monto = g("aho-monto"), fecha = g("aho-fecha");
+  const tipo  = document.getElementById("aho-tipo").value;
+  let ok = true;
+  clrErr(["fa-monto","fa-fecha"]);
+  if (!monto || +monto <= 0) { setErr("fa-monto"); ok = false; }
+  if (!fecha)                { setErr("fa-fecha"); ok = false; }
+  if (!ok) return;
+  const btn = document.getElementById("btn-aho-save");
+  btn.disabled = true; btn.innerHTML = "⏳ Guardando...";
+  try {
+    await lmb("/ahorros", "POST", { monto: parseFloat(monto), fecha, tipo, nota: g("aho-nota") });
+    limpiarAhorro(); toast("Movimiento registrado ✓", "success"); cargarAhorros();
+  } catch(e) { toast("Error: " + e.message, "error"); }
+  finally { btn.disabled = false; btn.innerHTML = "Registrar"; }
+}
+
+async function cargarAhorros() {
+  const el = document.getElementById("aho-list");
+  el.innerHTML = skels(3);
+  try {
+    const data = await lmb("/ahorros");
+    const lista = data.movimientos || [];
+    document.getElementById("ahorro-total").textContent = "S/ " + (data.totalAhorrado || 0).toFixed(2);
+    document.getElementById("aho-count").textContent = lista.length + " movimiento" + (lista.length !== 1 ? "s" : "");
+    if (!lista.length) { el.innerHTML = `<div class="empty-state"><div class="empty-icon">💰</div><p>Sin movimientos registrados</p></div>`; return; }
+    el.innerHTML = lista.map(a => {
+      const esDeposito = a.tipo === "deposito";
+      return `<div class="ahorro-item">
+        <div class="ahorro-icon ${a.tipo}">${esDeposito ? "⬆️" : "⬇️"}</div>
+        <div class="ahorro-info">
+          <div class="prestamo-nombre">${esDeposito ? "Depósito" : "Retiro"}${a.nota ? " — " + esc(a.nota) : ""}</div>
+          <div class="prestamo-meta">📅 ${fmtFecha(a.fecha)}</div>
+        </div>
+        <div class="ahorro-monto ${a.tipo}">${esDeposito ? "+" : "-"} S/ ${parseFloat(a.monto).toFixed(2)}</div>
+        <button class="expense-delete" onclick="eliminarAhorro('${a.ahorroId}')" title="Eliminar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+        </button>
+      </div>`;
+    }).join("");
+  } catch(e) { el.innerHTML = `<div class="empty-state"><div class="empty-icon">⚠️</div><p>${e.message}</p></div>`; }
+}
+
+async function eliminarAhorro(id) {
+  if (!confirm("¿Eliminar este movimiento?")) return;
+  try { await lmb("/ahorros/" + encodeURIComponent(id), "DELETE"); toast("Movimiento eliminado", "error"); cargarAhorros(); }
+  catch(e) { toast("Error: " + e.message, "error"); }
 }
 
 function onFiltroMesChange() {
