@@ -2,23 +2,24 @@
   "name": "Control de Gastos",
   "short_name": "Gastos",
   "description": "App personal de control de gastos",
-  "start_url": "/ControlGastos/",
+  "start_url": "/ControlGastos/index.html",
+  "scope": "/ControlGastos/",
   "display": "standalone",
   "background_color": "#0f1117",
   "theme_color": "#0f1117",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "icon.png",
-      "sizes": "192x192",
+      "src": "/ControlGastos/icon.png",
+      "sizes": "any",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "icon.png",
-      "sizes": "512x512",
+      "src": "/ControlGastos/icon.png",
+      "sizes": "any",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable"
     }
   ]
 }
