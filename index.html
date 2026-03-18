@@ -198,17 +198,23 @@
     .rp-value { font-family: var(--font-body); font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
     .rp-value.debe  { color: #f87171; }
     .rp-value.deben { color: #4ade80; }
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 300; display: none; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(4px); box-sizing: border-box; }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 300; display: none; align-items: flex-end; justify-content: center; backdrop-filter: blur(4px); }
     .modal-overlay.open { display: flex; }
-    .modal-card { background: var(--surface); border: 1px solid rgba(249,115,22,0.2); border-radius: 24px; padding: 24px 20px; width: 100%; max-width: 480px; max-height: 88vh; overflow-y: auto; box-shadow: 0 32px 80px rgba(0,0,0,0.6); animation: modalIn 0.25s cubic-bezier(0.34,1.56,0.64,1); box-sizing: border-box; -webkit-overflow-scrolling: touch; }
-    @keyframes modalIn { from { opacity:0; transform: scale(0.92) translateY(20px); } to { opacity:1; transform: scale(1) translateY(0); } }
-    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
-    .modal-title { font-family: var(--font-display); font-size: 20px; font-weight: 800; }
-    .modal-close { background: none; border: none; color: var(--muted); cursor: pointer; padding: 6px; border-radius: 8px; font-size: 20px; line-height: 1; transition: all 0.2s; }
-    .modal-close:hover { color: var(--danger); background: rgba(244,63,94,0.1); }
-    .modal-actions { display: flex; gap: 12px; margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border); }
-    .modal-actions .btn-submit { flex: 1; justify-content: center; padding: 14px; }
-    .modal-actions .btn-clear  { flex: 0 0 auto; padding: 14px 20px; }
+    .modal-card { background: var(--surface); border: 1px solid rgba(249,115,22,0.2); border-radius: 20px 20px 0 0; width: 100%; max-width: 100%; max-height: 85vh; display: flex; flex-direction: column; box-shadow: 0 -8px 40px rgba(0,0,0,0.6); animation: modalUp 0.25s cubic-bezier(0.34,1.2,0.64,1); overflow: hidden; }
+    @media (min-width: 600px) {
+      .modal-overlay { align-items: center; padding: 16px; }
+      .modal-card { border-radius: 20px; max-width: 480px; animation: modalIn 0.25s cubic-bezier(0.34,1.56,0.64,1); }
+    }
+    .modal-body { padding: 20px 20px 8px; overflow-y: auto; flex: 1; -webkit-overflow-scrolling: touch; }
+    .modal-actions { padding: 12px 16px; border-top: 1px solid var(--border); background: var(--surface); display: flex; gap: 10px; flex-shrink: 0; box-sizing: border-box; }
+    @keyframes modalIn  { from { opacity:0; transform: scale(0.92) translateY(20px); } to { opacity:1; transform: scale(1) translateY(0); } }
+    @keyframes modalUp  { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .modal-title { font-family: var(--font-display); font-size: 18px; font-weight: 800; }
+    .modal-close { background: none; border: none; color: var(--muted); cursor: pointer; padding: 4px 8px; border-radius: 8px; font-size: 18px; line-height: 1; transition: color 0.2s; }
+    .modal-close:hover { color: var(--danger); }
+    .modal-actions .btn-submit { flex: 1; justify-content: center; padding: 13px 8px; min-width: 0; font-size: 14px; }
+    .modal-actions .btn-clear  { flex: 1; padding: 13px 8px; min-width: 0; font-size: 14px; text-align: center; }
 
     /* ESTADÍSTICAS */
     .est-kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
@@ -684,30 +690,32 @@
 <!-- MODAL EDITAR AHORRO -->
 <div class="modal-overlay" id="modal-ahorro" onclick="if(event.target===this)cerrarModalAhorro()">
   <div class="modal-card">
-    <div class="modal-header">
-      <span class="modal-title">Editar Ahorro</span>
-      <button class="modal-close" onclick="cerrarModalAhorro()">✕</button>
-    </div>
-    <input type="hidden" id="edit-aho-id" />
-    <div class="modulo-tabs">
-      <button class="modulo-tab active" id="edit-tab-deposito" onclick="setEditTipoAhorro('deposito')">➕ Depósito</button>
-      <button class="modulo-tab"        id="edit-tab-retiro"   onclick="setEditTipoAhorro('retiro')">➖ Retiro</button>
-    </div>
-    <input type="hidden" id="edit-aho-tipo" value="deposito" />
-    <div class="field" id="eaho-titulo">
-      <label>Título *</label>
-      <input type="text" id="edit-aho-titulo" maxlength="60" />
-      <span class="field-error">Requerido</span>
-    </div>
-    <div class="grid-2">
-      <div class="field" id="eaho-monto">
-        <label>Monto *</label>
-        <div class="amount-wrap"><span class="currency">S/</span><input type="number" id="edit-aho-monto" step="0.01" min="0" /></div>
-        <span class="field-error">Monto inválido</span>
+    <div class="modal-body">
+      <div class="modal-header">
+        <span class="modal-title">Editar Ahorro</span>
+        <button class="modal-close" onclick="cerrarModalAhorro()">✕</button>
       </div>
-      <div class="field">
-        <label>Fecha</label>
-        <input type="date" id="edit-aho-fecha" />
+      <input type="hidden" id="edit-aho-id" />
+      <div class="modulo-tabs">
+        <button class="modulo-tab active" id="edit-tab-deposito" onclick="setEditTipoAhorro('deposito')">➕ Depósito</button>
+        <button class="modulo-tab"        id="edit-tab-retiro"   onclick="setEditTipoAhorro('retiro')">➖ Retiro</button>
+      </div>
+      <input type="hidden" id="edit-aho-tipo" value="deposito" />
+      <div class="field" id="eaho-titulo">
+        <label>Título *</label>
+        <input type="text" id="edit-aho-titulo" maxlength="60" />
+        <span class="field-error">Requerido</span>
+      </div>
+      <div class="grid-2">
+        <div class="field" id="eaho-monto">
+          <label>Monto *</label>
+          <div class="amount-wrap"><span class="currency">S/</span><input type="number" id="edit-aho-monto" step="0.01" min="0" /></div>
+          <span class="field-error">Monto inválido</span>
+        </div>
+        <div class="field">
+          <label>Fecha</label>
+          <input type="date" id="edit-aho-fecha" />
+        </div>
       </div>
     </div>
     <div class="modal-actions">
@@ -723,36 +731,38 @@
 <!-- MODAL EDITAR PRÉSTAMO -->
 <div class="modal-overlay" id="modal-prestamo" onclick="if(event.target===this)cerrarModalPrestamo()">
   <div class="modal-card">
-    <div class="modal-header">
-      <span class="modal-title">Editar Préstamo</span>
-      <button class="modal-close" onclick="cerrarModalPrestamo()">✕</button>
-    </div>
-    <input type="hidden" id="edit-pres-id" />
-    <div class="modulo-tabs">
-      <button class="modulo-tab active" id="edit-tab-preste"       onclick="setEditTipoPrestamo('preste')">💸 Presté dinero</button>
-      <button class="modulo-tab"        id="edit-tab-me_prestaron" onclick="setEditTipoPrestamo('me_prestaron')">🤝 Me prestaron</button>
-    </div>
-    <input type="hidden" id="edit-pres-tipo" value="preste" />
-    <div class="grid-2">
-      <div class="field" id="efp-nombre">
-        <label>Nombre *</label>
-        <input type="text" id="edit-pres-nombre" maxlength="60" />
-        <span class="field-error">Requerido</span>
+    <div class="modal-body">
+      <div class="modal-header">
+        <span class="modal-title">Editar Préstamo</span>
+        <button class="modal-close" onclick="cerrarModalPrestamo()">✕</button>
       </div>
-      <div class="field" id="efp-monto">
-        <label>Monto pendiente *</label>
-        <div class="amount-wrap"><span class="currency">S/</span><input type="number" id="edit-pres-monto" step="0.01" min="0" /></div>
-        <span class="field-error">Monto inválido</span>
+      <input type="hidden" id="edit-pres-id" />
+      <div class="modulo-tabs">
+        <button class="modulo-tab active" id="edit-tab-preste"       onclick="setEditTipoPrestamo('preste')">💸 Presté dinero</button>
+        <button class="modulo-tab"        id="edit-tab-me_prestaron" onclick="setEditTipoPrestamo('me_prestaron')">🤝 Me prestaron</button>
       </div>
-    </div>
-    <div class="grid-2">
-      <div class="field" id="efp-fecha">
-        <label>Fecha</label>
-        <input type="date" id="edit-pres-fecha" />
+      <input type="hidden" id="edit-pres-tipo" value="preste" />
+      <div class="grid-2">
+        <div class="field" id="efp-nombre">
+          <label>Nombre *</label>
+          <input type="text" id="edit-pres-nombre" maxlength="60" />
+          <span class="field-error">Requerido</span>
+        </div>
+        <div class="field" id="efp-monto">
+          <label>Monto pendiente *</label>
+          <div class="amount-wrap"><span class="currency">S/</span><input type="number" id="edit-pres-monto" step="0.01" min="0" /></div>
+          <span class="field-error">Monto inválido</span>
+        </div>
       </div>
-      <div class="field">
-        <label>Nota</label>
-        <input type="text" id="edit-pres-nota" maxlength="100" />
+      <div class="grid-2">
+        <div class="field" id="efp-fecha">
+          <label>Fecha</label>
+          <input type="date" id="edit-pres-fecha" />
+        </div>
+        <div class="field">
+          <label>Nota</label>
+          <input type="text" id="edit-pres-nota" maxlength="100" />
+        </div>
       </div>
     </div>
     <div class="modal-actions">
@@ -768,61 +778,63 @@
 <!-- MODAL EDITAR GASTO -->
 <div class="modal-overlay" id="modal-editar" onclick="if(event.target===this)cerrarModal()">
   <div class="modal-card">
-    <div class="modal-header">
-      <span class="modal-title">Editar Gasto</span>
-      <button class="modal-close" onclick="cerrarModal()">✕</button>
-    </div>
-    <input type="hidden" id="edit-gastoId" />
-    <div class="grid-2">
-      <div class="field" id="ef-titulo">
-        <label>Título *</label>
-        <input type="text" id="edit-titulo" maxlength="60" />
-        <span class="field-error">Requerido</span>
+    <div class="modal-body">
+      <div class="modal-header">
+        <span class="modal-title">Editar Gasto</span>
+        <button class="modal-close" onclick="cerrarModal()">✕</button>
       </div>
-      <div class="field" id="ef-cat">
-        <label>Categoría *</label>
-        <select id="edit-categoria">
-          <option value="hormiga">🐜 Gastos Hormiga</option>
-          <option value="combustible">⛽ Combustible</option>
-          <option value="salidas">🎉 Salidas</option>
-          <option value="comida">🍽️ Comida</option>
-          <option value="fijos">🏠 Gastos Fijos</option>
-          <option value="estudios">📚 Estudios</option>
-          <option value="inversion">📈 Inversión</option>
-          <option value="otros">📦 Otros</option>
-          <option value="carrito">🚗 Amor al carrito</option>
-          <option value="tarjeta">💳 Tarjeta de Crédito</option>
-        </select>
+      <input type="hidden" id="edit-gastoId" />
+      <div class="grid-2">
+        <div class="field" id="ef-titulo">
+          <label>Título *</label>
+          <input type="text" id="edit-titulo" maxlength="60" />
+          <span class="field-error">Requerido</span>
+        </div>
+        <div class="field" id="ef-cat">
+          <label>Categoría *</label>
+          <select id="edit-categoria">
+            <option value="hormiga">🐜 Gastos Hormiga</option>
+            <option value="combustible">⛽ Combustible</option>
+            <option value="salidas">🎉 Salidas</option>
+            <option value="comida">🍽️ Comida</option>
+            <option value="fijos">🏠 Gastos Fijos</option>
+            <option value="estudios">📚 Estudios</option>
+            <option value="inversion">📈 Inversión</option>
+            <option value="otros">📦 Otros</option>
+            <option value="carrito">🚗 Amor al carrito</option>
+            <option value="tarjeta">💳 Tarjeta de Crédito</option>
+          </select>
+        </div>
       </div>
-    </div>
-    <div class="grid-2">
-      <div class="field" id="ef-monto">
-        <label>Monto *</label>
-        <div class="amount-wrap"><span class="currency">S/</span><input type="number" id="edit-monto" step="0.01" min="0" /></div>
-        <span class="field-error">Monto inválido</span>
+      <div class="grid-2">
+        <div class="field" id="ef-monto">
+          <label>Monto *</label>
+          <div class="amount-wrap"><span class="currency">S/</span><input type="number" id="edit-monto" step="0.01" min="0" /></div>
+          <span class="field-error">Monto inválido</span>
+        </div>
+        <div class="field" id="ef-fecha">
+          <label>Fecha *</label>
+          <input type="date" id="edit-fecha" />
+          <span class="field-error">Requerida</span>
+        </div>
       </div>
-      <div class="field" id="ef-fecha">
-        <label>Fecha *</label>
-        <input type="date" id="edit-fecha" />
-        <span class="field-error">Requerida</span>
+      <div class="field">
+        <label>Método de pago</label>
+        <div class="pay-toggle">
+          <input type="radio" name="edit-pago" id="ep1" value="efectivo"        class="pay-option" /><label class="pay-label" for="ep1">💵 Efectivo</label>
+          <input type="radio" name="edit-pago" id="ep2" value="tarjeta_debito"  class="pay-option" /><label class="pay-label" for="ep2">💳 Débito</label>
+          <input type="radio" name="edit-pago" id="ep3" value="tarjeta_credito" class="pay-option" /><label class="pay-label" for="ep3">🏦 Crédito</label>
+          <input type="radio" name="edit-pago" id="ep4" value="yape_plin"       class="pay-option" /><label class="pay-label" for="ep4">📱 Yape/Plin</label>
+        </div>
       </div>
-    </div>
-    <div class="field">
-      <label>Método de pago</label>
-      <div class="pay-toggle">
-        <input type="radio" name="edit-pago" id="ep1" value="efectivo"        class="pay-option" /><label class="pay-label" for="ep1">💵 Efectivo</label>
-        <input type="radio" name="edit-pago" id="ep2" value="tarjeta_debito"  class="pay-option" /><label class="pay-label" for="ep2">💳 Débito</label>
-        <input type="radio" name="edit-pago" id="ep3" value="tarjeta_credito" class="pay-option" /><label class="pay-label" for="ep3">🏦 Crédito</label>
-        <input type="radio" name="edit-pago" id="ep4" value="yape_plin"       class="pay-option" /><label class="pay-label" for="ep4">📱 Yape/Plin</label>
+      <div class="field">
+        <label>Descripción</label>
+        <textarea id="edit-descripcion" maxlength="200" style="min-height:70px"></textarea>
       </div>
-    </div>
-    <div class="field">
-      <label>Descripción</label>
-      <textarea id="edit-descripcion" maxlength="200" style="min-height:70px"></textarea>
-    </div>
-    <div class="grid-2">
-      <div class="field"><label>Lugar</label><input type="text" id="edit-lugar" maxlength="60" /></div>
-      <div class="field"><label>Etiqueta</label><input type="text" id="edit-etiqueta" maxlength="30" /></div>
+      <div class="grid-2">
+        <div class="field"><label>Lugar</label><input type="text" id="edit-lugar" maxlength="60" /></div>
+        <div class="field"><label>Etiqueta</label><input type="text" id="edit-etiqueta" maxlength="30" /></div>
+      </div>
     </div>
     <div class="modal-actions">
       <button class="btn-clear" onclick="cerrarModal()">Cancelar</button>
