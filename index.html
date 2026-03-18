@@ -87,17 +87,31 @@
 
     /* NAV */
     #app { display: none; position: relative; z-index: 1; min-height: 100vh; }
-    .nav { position: sticky; top: 0; z-index: 50; background: rgba(15,17,23,0.92); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(249,115,22,0.12); padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 64px; }
-    .nav-brand { display: flex; align-items: center; gap: 12px; }
+    .nav { position: sticky; top: 0; z-index: 50; background: rgba(15,17,23,0.92); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(249,115,22,0.12); padding: 0 20px; display: flex; align-items: center; justify-content: space-between; height: 56px; }
     .nav-brand h2 { font-family: var(--font-display); font-size: 18px; font-weight: 700; }
     .nav-brand h2 span { color: var(--accent); }
-    .nav-right { display: flex; align-items: center; gap: 16px; }
-    .nav-user { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--muted); }
-    .nav-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #f97316, #facc15); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; }
-    .nav-links { display: flex; gap: 4px; }
-    .nav-link { padding: 7px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; background: none; color: var(--muted); transition: all 0.2s; font-family: var(--font-body); }
-    .nav-link.active { background: rgba(249,115,22,0.12); color: var(--accent); }
-    .nav-link:hover:not(.active) { color: var(--text); background: var(--surface); }
+    .nav-right { display: flex; align-items: center; gap: 12px; }
+    .nav-user { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--muted); }
+    .nav-avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #f97316, #facc15); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0; }
+
+    /* HAMBURGER BUTTON */
+    .btn-hamburger { background: none; border: 1px solid var(--border); border-radius: 8px; width: 38px; height: 38px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; cursor: pointer; padding: 0; transition: all 0.2s; }
+    .btn-hamburger:hover { border-color: var(--accent); }
+    .btn-hamburger span { display: block; width: 16px; height: 2px; background: var(--text); border-radius: 2px; transition: all 0.25s; }
+    .btn-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .btn-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .btn-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* DROPDOWN MENU */
+    .hamburger-menu { position: fixed; top: 56px; right: 0; width: 220px; background: var(--surface); border: 1px solid rgba(249,115,22,0.15); border-top: none; border-radius: 0 0 16px 16px; padding: 8px; z-index: 49; box-shadow: 0 16px 40px rgba(0,0,0,0.5); transform: translateY(-8px); opacity: 0; pointer-events: none; transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1); }
+    .hamburger-menu.open { transform: translateY(0); opacity: 1; pointer-events: all; }
+    .hmenu-item { width: 100%; display: flex; align-items: center; gap: 10px; padding: 11px 14px; border: none; background: none; color: var(--muted); font-family: var(--font-body); font-size: 14px; font-weight: 500; cursor: pointer; border-radius: 10px; transition: all 0.15s; text-align: left; }
+    .hmenu-item:hover { background: var(--surface2); color: var(--text); }
+    .hmenu-item.active { background: rgba(249,115,22,0.12); color: var(--accent); }
+    .hmenu-item svg { flex-shrink: 0; }
+    .hmenu-divider { height: 1px; background: var(--border); margin: 6px 0; }
+    .hmenu-salir { color: var(--danger) !important; }
+    .hmenu-salir:hover { background: rgba(244,63,94,0.1) !important; }
 
     /* MAIN */
     .main { max-width: 760px; margin: 0 auto; padding: 40px 24px 80px; }
@@ -179,11 +193,11 @@
     .total-ahorro-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
     .total-ahorro-valor { font-family: var(--font-display); font-size: 36px; font-weight: 800; color: var(--text); }
     .resumen-prestamos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
-    .rp-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; }
-    .rp-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
-    .rp-value { font-family: var(--font-display); font-size: 18px; font-weight: 800; }
-    .rp-value.debe { color: var(--danger); }
-    .rp-value.deben { color: var(--success); }
+    .rp-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; }
+    .rp-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+    .rp-value { font-family: var(--font-body); font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
+    .rp-value.debe  { color: #f87171; }
+    .rp-value.deben { color: #4ade80; }
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 300; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
     .modal-overlay.open { display: flex; }
     .modal-card { background: var(--surface); border: 1px solid rgba(249,115,22,0.2); border-radius: 24px; padding: 28px 24px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: 0 32px 80px rgba(0,0,0,0.6); animation: modalIn 0.25s cubic-bezier(0.34,1.56,0.64,1); }
@@ -212,14 +226,6 @@
     .est-top-sub { font-size: 12px; color: var(--muted); }
     .est-top-amount { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--text); }
 
-    /* BOTTOM NAV MÓVIL */
-    .bottom-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; background: rgba(15,17,23,0.96); backdrop-filter: blur(20px); border-top: 1px solid rgba(249,115,22,0.12); height: 72px; padding-bottom: env(safe-area-inset-bottom); }
-    .bottom-nav-inner { display: flex; width: 100%; height: 100%; align-items: center; justify-content: space-around; }
-    .bottom-nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 0; border: none; background: none; color: var(--muted); font-family: var(--font-body); font-size: 11px; font-weight: 500; cursor: pointer; transition: all 0.2s; flex: 1; height: 100%; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
-    .bottom-nav-btn * { pointer-events: none; }
-    .bottom-nav-btn svg { width: 22px; height: 22px; }
-    .bottom-nav-btn.active { color: var(--accent); background: rgba(249,115,22,0.1); }
-
     #toast { position: fixed; bottom: 32px; right: 32px; background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; padding: 16px 22px; font-size: 14px; color: var(--text); box-shadow: 0 16px 48px rgba(0,0,0,0.5); transform: translateY(100px); opacity: 0; transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 200; display: flex; align-items: center; gap: 12px; max-width: 340px; }
     #toast.show { transform: translateY(0); opacity: 1; }
     #toast.success { border-color: rgba(249,115,22,0.4); }
@@ -238,20 +244,14 @@
       .field { margin-bottom: 16px; }
       .amount-wrap input { font-size: 22px !important; }
 
-      /* NAV SUPERIOR COMPACTO */
-      .nav { padding: 0 16px; height: 56px; }
-      .nav-brand h2 { font-size: 16px; }
-      .nav-links { display: none; }
+      /* NAV */
+      .nav { padding: 0 16px; }
       .nav-user span { display: none; }
-      .btn-logout { padding: 6px 12px; font-size: 12px; }
-
-      /* NAVEGACIÓN INFERIOR MÓVIL */
-      .bottom-nav { display: flex; }
-      .bottom-nav-inner { width: 100%; }
-      .bottom-nav-btn { flex: 1; height: 100%; }
+      /* HAMBURGER MENU ancho completo en móvil */
+      .hamburger-menu { width: 100%; border-radius: 0 0 16px 16px; right: 0; left: 0; }
 
       /* MAIN */
-      .main { padding: 16px 16px 100px; }
+      .main { padding: 16px 16px 32px; }
       .page-header { margin-bottom: 20px; }
       .page-header h1 { font-size: 26px; }
       .page-header p { font-size: 13px; }
@@ -362,38 +362,45 @@
 <div id="app">
   <nav class="nav">
     <div class="nav-brand"><h2>Control de <span>Gastos</span></h2></div>
-    <div class="nav-links">
-      <button class="nav-link active" id="nav-reg" onclick="showView('registrar')">Registrar</button>
-      <button class="nav-link"        id="nav-con" onclick="showView('consultar')">Consultar</button>
-      <button class="nav-link"        id="nav-est" onclick="showView('estadisticas')">Estadísticas</button>
-      <button class="nav-link"        id="nav-pre" onclick="showView('prestamos')">Préstamos</button>
-      <button class="nav-link"        id="nav-aho" onclick="showView('ahorros')">Ahorros</button>
-    </div>
     <div class="nav-right">
       <div class="nav-user">
         <div class="nav-avatar" id="user-avatar">U</div>
         <span id="user-name">Usuario</span>
       </div>
-      <button class="btn-logout" onclick="doLogout()">Salir</button>
+      <button class="btn-hamburger" id="btn-hamburger" onclick="toggleMenu()" aria-label="Menú">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </nav>
 
-  <nav class="bottom-nav" id="bottom-nav">
-    <div class="bottom-nav-inner">
-      <button class="bottom-nav-btn active" id="bnav-reg">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-        <span>Registrar</span>
-      </button>
-      <button class="bottom-nav-btn" id="bnav-con">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <span>Consultar</span>
-      </button>
-      <button class="bottom-nav-btn" id="bnav-est">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-        <span>Estadísticas</span>
-      </button>
-    </div>
-  </nav>
+  <!-- MENÚ DESPLEGABLE -->
+  <div class="hamburger-menu" id="hamburger-menu">
+    <button class="hmenu-item active" id="nav-reg" onclick="showView('registrar')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+      Registrar
+    </button>
+    <button class="hmenu-item" id="nav-con" onclick="showView('consultar')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      Consultar
+    </button>
+    <button class="hmenu-item" id="nav-est" onclick="showView('estadisticas')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Estadísticas
+    </button>
+    <button class="hmenu-item" id="nav-pre" onclick="showView('prestamos')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 9V7a5 5 0 00-10 0v2"/><rect x="3" y="9" width="18" height="13" rx="2"/></svg>
+      Préstamos
+    </button>
+    <button class="hmenu-item" id="nav-aho" onclick="showView('ahorros')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/><path d="M12 6v6l4 2"/></svg>
+      Ahorros
+    </button>
+    <div class="hmenu-divider"></div>
+    <button class="hmenu-item hmenu-salir" onclick="doLogout()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      Salir
+    </button>
+  </div>
 
   <main class="main">
 
@@ -636,6 +643,11 @@
           <button class="modulo-tab"        id="tab-retiro"   onclick="setTipoAhorro('retiro')">➖ Retirar</button>
         </div>
         <input type="hidden" id="aho-tipo" value="deposito" />
+        <div class="field" id="fa-titulo">
+          <label>Título *</label>
+          <input type="text" id="aho-titulo" placeholder="Ej: Ahorro quincena, Fondo emergencia..." maxlength="60" />
+          <span class="field-error">Título requerido</span>
+        </div>
         <div class="grid-2">
           <div class="field" id="fa-monto">
             <label>Monto *</label>
@@ -667,6 +679,90 @@
     </div>
 
   </main>
+</div>
+
+<!-- MODAL EDITAR AHORRO -->
+<div class="modal-overlay" id="modal-ahorro" onclick="if(event.target===this)cerrarModalAhorro()">
+  <div class="modal-card">
+    <div class="modal-header">
+      <span class="modal-title">Editar Ahorro</span>
+      <button class="modal-close" onclick="cerrarModalAhorro()">✕</button>
+    </div>
+    <input type="hidden" id="edit-aho-id" />
+    <div class="modulo-tabs">
+      <button class="modulo-tab active" id="edit-tab-deposito" onclick="setEditTipoAhorro('deposito')">➕ Depósito</button>
+      <button class="modulo-tab"        id="edit-tab-retiro"   onclick="setEditTipoAhorro('retiro')">➖ Retiro</button>
+    </div>
+    <input type="hidden" id="edit-aho-tipo" value="deposito" />
+    <div class="field" id="eaho-titulo">
+      <label>Título *</label>
+      <input type="text" id="edit-aho-titulo" maxlength="60" />
+      <span class="field-error">Requerido</span>
+    </div>
+    <div class="grid-2">
+      <div class="field" id="eaho-monto">
+        <label>Monto *</label>
+        <div class="amount-wrap"><span class="currency">S/</span><input type="number" id="edit-aho-monto" step="0.01" min="0" /></div>
+        <span class="field-error">Monto inválido</span>
+      </div>
+      <div class="field">
+        <label>Fecha</label>
+        <input type="date" id="edit-aho-fecha" />
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-clear" onclick="cerrarModalAhorro()">Cancelar</button>
+      <button class="btn-submit" onclick="guardarEdicionAhorro()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Guardar cambios
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR PRÉSTAMO -->
+<div class="modal-overlay" id="modal-prestamo" onclick="if(event.target===this)cerrarModalPrestamo()">
+  <div class="modal-card">
+    <div class="modal-header">
+      <span class="modal-title">Editar Préstamo</span>
+      <button class="modal-close" onclick="cerrarModalPrestamo()">✕</button>
+    </div>
+    <input type="hidden" id="edit-pres-id" />
+    <div class="modulo-tabs">
+      <button class="modulo-tab active" id="edit-tab-preste"       onclick="setEditTipoPrestamo('preste')">💸 Presté dinero</button>
+      <button class="modulo-tab"        id="edit-tab-me_prestaron" onclick="setEditTipoPrestamo('me_prestaron')">🤝 Me prestaron</button>
+    </div>
+    <input type="hidden" id="edit-pres-tipo" value="preste" />
+    <div class="grid-2">
+      <div class="field" id="efp-nombre">
+        <label>Nombre *</label>
+        <input type="text" id="edit-pres-nombre" maxlength="60" />
+        <span class="field-error">Requerido</span>
+      </div>
+      <div class="field" id="efp-monto">
+        <label>Monto pendiente *</label>
+        <div class="amount-wrap"><span class="currency">S/</span><input type="number" id="edit-pres-monto" step="0.01" min="0" /></div>
+        <span class="field-error">Monto inválido</span>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="field" id="efp-fecha">
+        <label>Fecha</label>
+        <input type="date" id="edit-pres-fecha" />
+      </div>
+      <div class="field">
+        <label>Nota</label>
+        <input type="text" id="edit-pres-nota" maxlength="100" />
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-clear" onclick="cerrarModalPrestamo()">Cancelar</button>
+      <button class="btn-submit" onclick="guardarEdicionPrestamo()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Guardar cambios
+      </button>
+    </div>
+  </div>
 </div>
 
 <!-- MODAL EDITAR GASTO -->
@@ -863,35 +959,43 @@ function showApp() {
   document.getElementById("view-prestamos").style.display   = "none";
   document.getElementById("view-ahorros").style.display     = "none";
   document.getElementById("nav-reg").classList.add("active");
-  document.getElementById("nav-con").classList.remove("active");
-  document.getElementById("nav-est").classList.remove("active");
+  document.getElementById("nav-con")?.classList.remove("active");
+  document.getElementById("nav-est")?.classList.remove("active");
   document.getElementById("nav-pre")?.classList.remove("active");
   document.getElementById("nav-aho")?.classList.remove("active");
-  document.getElementById("bnav-reg").classList.add("active");
-  document.getElementById("bnav-con").classList.remove("active");
-  document.getElementById("bnav-est").classList.remove("active");
   startSessionTimer();
   cargarResumen();
   cargarHoy();
 }
 
+function toggleMenu() {
+  const btn  = document.getElementById("btn-hamburger");
+  const menu = document.getElementById("hamburger-menu");
+  btn.classList.toggle("open");
+  menu.classList.toggle("open");
+}
+
+function closeMenu() {
+  document.getElementById("btn-hamburger").classList.remove("open");
+  document.getElementById("hamburger-menu").classList.remove("open");
+}
+
+// Cerrar menú al tocar fuera
+document.addEventListener("click", (e) => {
+  const menu = document.getElementById("hamburger-menu");
+  const btn  = document.getElementById("btn-hamburger");
+  if (menu && btn && !menu.contains(e.target) && !btn.contains(e.target)) closeMenu();
+});
+
 function showView(v) {
+  closeMenu();
   ["registrar","consultar","estadisticas","prestamos","ahorros"].forEach(id => {
     document.getElementById("view-" + id).style.display = v === id ? "block" : "none";
   });
-  ["nav-reg","nav-con","nav-est","nav-pre","nav-aho"].forEach(id => {
-    document.getElementById(id)?.classList.remove("active");
-  });
   const navMap = { registrar:"nav-reg", consultar:"nav-con", estadisticas:"nav-est", prestamos:"nav-pre", ahorros:"nav-aho" };
+  Object.values(navMap).forEach(id => document.getElementById(id)?.classList.remove("active"));
   document.getElementById(navMap[v])?.classList.add("active");
-  document.getElementById("bnav-reg").classList.toggle("active", v === "registrar");
-  document.getElementById("bnav-con").classList.toggle("active", v === "consultar");
-  document.getElementById("bnav-est").classList.toggle("active", v === "estadisticas");
-  if (v === "consultar") {
-    document.getElementById("filtro-mes").value = hoy().substring(0,7);
-    document.getElementById("filtro-dia").value = "";
-    consultarGastos();
-  }
+  if (v === "consultar")    { document.getElementById("filtro-mes").value = hoy().substring(0,7); document.getElementById("filtro-dia").value = ""; consultarGastos(); }
   if (v === "estadisticas") cargarEstadisticas();
   if (v === "prestamos")    cargarPrestamos();
   if (v === "ahorros")      cargarAhorros();
@@ -1376,6 +1480,9 @@ async function cargarPrestamos() {
           <div class="prestamo-meta">${esMePrestaron ? "Me prestó" : "Le presté"} · ${fmtFecha(p.fecha)}${p.nota ? " · " + esc(p.nota) : ""}</div>
         </div>
         <div class="prestamo-monto ${p.tipo}">${esMePrestaron ? "-" : "+"} S/ ${parseFloat(p.monto).toFixed(2)}</div>
+        <button class="expense-delete" onclick="abrirEdicionPrestamo(${JSON.stringify(p).replace(/"/g,'&quot;')})" title="Editar" style="color:var(--accent2)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
         <button class="expense-delete" onclick="eliminarPrestamo('${p.prestamoId}')" title="Saldado / Eliminar">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
         </button>
@@ -1390,6 +1497,52 @@ async function eliminarPrestamo(id) {
   catch(e) { toast("Error: " + e.message, "error"); }
 }
 
+function abrirEdicionPrestamo(p) {
+  document.getElementById("edit-pres-id").value     = p.prestamoId;
+  document.getElementById("edit-pres-nombre").value = p.nombre || "";
+  document.getElementById("edit-pres-monto").value  = parseFloat(p.monto || 0).toFixed(2);
+  document.getElementById("edit-pres-fecha").value  = p.fecha || "";
+  document.getElementById("edit-pres-nota").value   = p.nota || "";
+  setEditTipoPrestamo(p.tipo || "preste");
+  clrErr(["efp-nombre","efp-monto","efp-fecha"]);
+  document.getElementById("modal-prestamo").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function cerrarModalPrestamo() {
+  document.getElementById("modal-prestamo").classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+function setEditTipoPrestamo(tipo) {
+  document.getElementById("edit-pres-tipo").value = tipo;
+  document.getElementById("edit-tab-preste").classList.toggle("active",       tipo === "preste");
+  document.getElementById("edit-tab-me_prestaron").classList.toggle("active", tipo === "me_prestaron");
+}
+
+async function guardarEdicionPrestamo() {
+  const id     = document.getElementById("edit-pres-id").value;
+  const nombre = document.getElementById("edit-pres-nombre").value.trim();
+  const monto  = document.getElementById("edit-pres-monto").value;
+  const fecha  = document.getElementById("edit-pres-fecha").value;
+  const tipo   = document.getElementById("edit-pres-tipo").value;
+  const nota   = document.getElementById("edit-pres-nota").value.trim();
+  let ok = true;
+  clrErr(["efp-nombre","efp-monto"]);
+  if (!nombre)             { setErr("efp-nombre"); ok = false; }
+  if (!monto || +monto <= 0) { setErr("efp-monto");  ok = false; }
+  if (!ok) return;
+  const btn = document.querySelector("#modal-prestamo .btn-submit");
+  btn.disabled = true; btn.innerHTML = "⏳ Guardando...";
+  try {
+    await lmb("/prestamos/" + encodeURIComponent(id), "PUT", { nombre, monto: parseFloat(monto), fecha, tipo, nota });
+    cerrarModalPrestamo();
+    toast("Préstamo actualizado ✓", "success");
+    cargarPrestamos();
+  } catch(e) { toast("Error: " + e.message, "error"); }
+  finally { btn.disabled = false; btn.innerHTML = "Guardar cambios"; }
+}
+
 // ══════════════════════════════════════════════════════════
 //  AHORROS
 // ══════════════════════════════════════════════════════════
@@ -1400,24 +1553,25 @@ function setTipoAhorro(tipo) {
 }
 
 function limpiarAhorro() {
-  ["aho-monto","aho-nota"].forEach(id => { const el=document.getElementById(id); if(el) el.value=""; });
+  ["aho-titulo","aho-monto","aho-nota"].forEach(id => { const el=document.getElementById(id); if(el) el.value=""; });
   document.getElementById("aho-fecha").value = hoy();
   setTipoAhorro("deposito");
-  clrErr(["fa-monto","fa-fecha"]);
+  clrErr(["fa-titulo","fa-monto","fa-fecha"]);
 }
 
 async function guardarAhorro() {
-  const monto = g("aho-monto"), fecha = g("aho-fecha");
-  const tipo  = document.getElementById("aho-tipo").value;
+  const titulo = g("aho-titulo"), monto = g("aho-monto"), fecha = g("aho-fecha");
+  const tipo   = document.getElementById("aho-tipo").value;
   let ok = true;
-  clrErr(["fa-monto","fa-fecha"]);
+  clrErr(["fa-titulo","fa-monto","fa-fecha"]);
+  if (!titulo)               { setErr("fa-titulo"); ok = false; }
   if (!monto || +monto <= 0) { setErr("fa-monto"); ok = false; }
   if (!fecha)                { setErr("fa-fecha"); ok = false; }
   if (!ok) return;
   const btn = document.getElementById("btn-aho-save");
   btn.disabled = true; btn.innerHTML = "⏳ Guardando...";
   try {
-    await lmb("/ahorros", "POST", { monto: parseFloat(monto), fecha, tipo, nota: g("aho-nota") });
+    await lmb("/ahorros", "POST", { titulo, monto: parseFloat(monto), fecha, tipo, nota: g("aho-nota") });
     limpiarAhorro(); toast("Movimiento registrado ✓", "success"); cargarAhorros();
   } catch(e) { toast("Error: " + e.message, "error"); }
   finally { btn.disabled = false; btn.innerHTML = "Registrar"; }
@@ -1434,13 +1588,17 @@ async function cargarAhorros() {
     if (!lista.length) { el.innerHTML = `<div class="empty-state"><div class="empty-icon">💰</div><p>Sin movimientos registrados</p></div>`; return; }
     el.innerHTML = lista.map(a => {
       const esDeposito = a.tipo === "deposito";
+      const titulo = a.titulo || (esDeposito ? "Depósito" : "Retiro");
       return `<div class="ahorro-item">
         <div class="ahorro-icon ${a.tipo}">${esDeposito ? "⬆️" : "⬇️"}</div>
         <div class="ahorro-info">
-          <div class="prestamo-nombre">${esDeposito ? "Depósito" : "Retiro"}${a.nota ? " — " + esc(a.nota) : ""}</div>
-          <div class="prestamo-meta">📅 ${fmtFecha(a.fecha)}</div>
+          <div class="prestamo-nombre">${esc(titulo)}</div>
+          <div class="prestamo-meta">📅 ${fmtFecha(a.fecha)}${a.nota ? " · " + esc(a.nota) : ""}</div>
         </div>
         <div class="ahorro-monto ${a.tipo}">${esDeposito ? "+" : "-"} S/ ${parseFloat(a.monto).toFixed(2)}</div>
+        <button class="expense-delete" onclick="abrirEdicionAhorro(${JSON.stringify(a).replace(/"/g,'&quot;')})" title="Editar" style="color:var(--accent2)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
         <button class="expense-delete" onclick="eliminarAhorro('${a.ahorroId}')" title="Eliminar">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
         </button>
@@ -1453,6 +1611,48 @@ async function eliminarAhorro(id) {
   if (!confirm("¿Eliminar este movimiento?")) return;
   try { await lmb("/ahorros/" + encodeURIComponent(id), "DELETE"); toast("Movimiento eliminado", "error"); cargarAhorros(); }
   catch(e) { toast("Error: " + e.message, "error"); }
+}
+
+function abrirEdicionAhorro(a) {
+  document.getElementById("edit-aho-id").value     = a.ahorroId;
+  document.getElementById("edit-aho-titulo").value = a.titulo || "";
+  document.getElementById("edit-aho-monto").value  = parseFloat(a.monto || 0).toFixed(2);
+  document.getElementById("edit-aho-fecha").value  = a.fecha || "";
+  setEditTipoAhorro(a.tipo || "deposito");
+  clrErr(["eaho-titulo","eaho-monto"]);
+  document.getElementById("modal-ahorro").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function cerrarModalAhorro() {
+  document.getElementById("modal-ahorro").classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+function setEditTipoAhorro(tipo) {
+  document.getElementById("edit-aho-tipo").value = tipo;
+  document.getElementById("edit-tab-deposito").classList.toggle("active", tipo === "deposito");
+  document.getElementById("edit-tab-retiro").classList.toggle("active",   tipo === "retiro");
+}
+
+async function guardarEdicionAhorro() {
+  const id     = document.getElementById("edit-aho-id").value;
+  const titulo = document.getElementById("edit-aho-titulo").value.trim();
+  const monto  = document.getElementById("edit-aho-monto").value;
+  const fecha  = document.getElementById("edit-aho-fecha").value;
+  const tipo   = document.getElementById("edit-aho-tipo").value;
+  let ok = true;
+  clrErr(["eaho-titulo","eaho-monto"]);
+  if (!titulo)             { setErr("eaho-titulo"); ok = false; }
+  if (!monto || +monto <= 0) { setErr("eaho-monto"); ok = false; }
+  if (!ok) return;
+  const btn = document.querySelector("#modal-ahorro .btn-submit");
+  btn.disabled = true; btn.innerHTML = "⏳ Guardando...";
+  try {
+    await lmb("/ahorros/" + encodeURIComponent(id), "PUT", { titulo, monto: parseFloat(monto), fecha, tipo });
+    cerrarModalAhorro(); toast("Ahorro actualizado ✓", "success"); cargarAhorros();
+  } catch(e) { toast("Error: " + e.message, "error"); }
+  finally { btn.disabled = false; btn.innerHTML = "Guardar cambios"; }
 }
 
 function onFiltroMesChange() {
