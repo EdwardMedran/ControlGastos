@@ -1325,7 +1325,7 @@ function renderEstadisticas(gastos) {
   const catHTML = Object.entries(porCat)
     .sort((a,b) => b[1]-a[1])
     .map(([cat, val]) => {
-      const cfg = CAT[cat] || CAT.otros;
+      const cfg = CAT[cat] || { e:'📦', l: cat || 'Otro', c:'cat-otros' };
       const pct = (val / maxCat * 100).toFixed(1);
       const color = CAT_COLORS[cat] || '#94a3b8';
       return `<div class="est-bar-row">
@@ -1380,7 +1380,7 @@ function renderEstadisticas(gastos) {
   // Top 5 gastos
   const top5 = [...gastos].sort((a,b) => parseFloat(b.monto)-parseFloat(a.monto)).slice(0,5);
   const top5HTML = top5.map((g, i) => {
-    const cat = CAT[g.categoria] || CAT.otros;
+    const cat = CAT[g.categoria] || { e:'📦', l: g.categoria || 'Otro', c:'cat-otros' };
     return `<div class="est-top-item">
       <div class="est-top-num">#${i+1}</div>
       <div class="est-top-info">
@@ -1755,7 +1755,7 @@ function renderLista(gastos, el, countId, allowDelete = false) {
 }
 
 function cardHTML(g, allowDelete = false) {
-  const cat  = CAT[g.categoria] || CAT.otros;
+  const cat  = CAT[g.categoria] || { e:'📦', l: g.categoria || 'Otro', c:'cat-otros' };
   const desc = g.descripcion ? `<span style="font-size:12px;color:var(--muted);display:block;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:320px">${esc(g.descripcion)}</span>` : "";
   const lugar = g.lugar ? `<span class="expense-date">📍 ${esc(g.lugar)}</span>` : "";
   const deleteBtn = allowDelete ? `
