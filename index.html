@@ -14,7 +14,7 @@
   <link rel="manifest" href="Manifest.json" />
 
   <!-- Ícono para iOS (se genera abajo) -->
-  <link rel="apple-touch-icon" href="Icon.png" />
+  <link rel="apple-touch-icon" href="icon.png" />
 
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6/dist/amazon-cognito-identity.min.js"></script>
@@ -447,14 +447,17 @@
               <option value="" disabled selected>Seleccionar categoría</option>
               <option value="hormiga">🐜 Gastos Hormiga</option>
               <option value="combustible">⛽ Combustible</option>
-              <option value="salidas">🎉 Salidas</option>
+              <option value="movilidad">🚌 Movilidad</option>
+              <option value="salud">🏥 Salud</option>
               <option value="comida">🍽️ Comida</option>
-              <option value="fijos">🏠 Gastos Fijos</option>
+              <option value="salidas">🎉 Salidas</option>
+              <option value="hogar">🏠 Hogar</option>
               <option value="estudios">📚 Estudios</option>
               <option value="inversion">📈 Inversión</option>
-              <option value="otros">📦 Otros</option>
               <option value="carrito">🚗 Amor al carrito</option>
               <option value="tarjeta">💳 Tarjeta de Crédito</option>
+              <option value="basket">🏀 Basket</option>
+              <option value="perros">🐾 Apoyo Perros y Gatos</option>
             </select>
             <span class="field-error">Selecciona una categoría</span>
           </div>
@@ -527,14 +530,17 @@
             <option value="">Todas</option>
             <option value="hormiga">🐜 Gastos Hormiga</option>
             <option value="combustible">⛽ Combustible</option>
-            <option value="salidas">🎉 Salidas</option>
+            <option value="movilidad">🚌 Movilidad</option>
+            <option value="salud">🏥 Salud</option>
             <option value="comida">🍽️ Comida</option>
-            <option value="fijos">🏠 Gastos Fijos</option>
+            <option value="salidas">🎉 Salidas</option>
+            <option value="hogar">🏠 Hogar</option>
             <option value="estudios">📚 Estudios</option>
             <option value="inversion">📈 Inversión</option>
-            <option value="otros">📦 Otros</option>
             <option value="carrito">🚗 Amor al carrito</option>
             <option value="tarjeta">💳 Tarjeta de Crédito</option>
+            <option value="basket">🏀 Basket</option>
+            <option value="perros">🐾 Apoyo Perros y Gatos</option>
           </select>
         </div>
       </div>
@@ -807,14 +813,17 @@
           <select id="edit-categoria">
             <option value="hormiga">🐜 Gastos Hormiga</option>
             <option value="combustible">⛽ Combustible</option>
-            <option value="salidas">🎉 Salidas</option>
+            <option value="movilidad">🚌 Movilidad</option>
+            <option value="salud">🏥 Salud</option>
             <option value="comida">🍽️ Comida</option>
-            <option value="fijos">🏠 Gastos Fijos</option>
+            <option value="salidas">🎉 Salidas</option>
+            <option value="hogar">🏠 Hogar</option>
             <option value="estudios">📚 Estudios</option>
             <option value="inversion">📈 Inversión</option>
-            <option value="otros">📦 Otros</option>
             <option value="carrito">🚗 Amor al carrito</option>
             <option value="tarjeta">💳 Tarjeta de Crédito</option>
+            <option value="basket">🏀 Basket</option>
+            <option value="perros">🐾 Apoyo Perros y Gatos</option>
           </select>
         </div>
       </div>
@@ -900,16 +909,19 @@ const CFG = {
 // ══════════════════════════════════════════
 
 const CAT = {
-  hormiga:     { e:'🐜', l:'Gastos Hormiga', c:'cat-hormiga'     },
-  combustible: { e:'⛽', l:'Combustible',     c:'cat-combustible' },
-  salidas:     { e:'🎉', l:'Salidas',         c:'cat-salidas'     },
-  comida:      { e:'🍽️', l:'Comida',          c:'cat-comida'      },
-  fijos:       { e:'🏠', l:'Gastos Fijos',    c:'cat-fijos'       },
-  estudios:    { e:'📚', l:'Estudios',        c:'cat-estudios'    },
-  inversion:   { e:'📈', l:'Inversión',       c:'cat-inversion'   },
-  otros:       { e:'📦', l:'Otros',           c:'cat-otros'       },
-  carrito:     { e:'🚗', l:'Amor al carrito',   c:'cat-carrito'  },
-  tarjeta:     { e:'💳', l:'Tarjeta de Crédito', c:'cat-tarjeta'  },
+  hormiga:     { e:'🐜', l:'Gastos Hormiga',       c:'cat-hormiga'     },
+  combustible: { e:'⛽', l:'Combustible',           c:'cat-combustible' },
+  movilidad:   { e:'🚌', l:'Movilidad',             c:'cat-movilidad'   },
+  salud:       { e:'🏥', l:'Salud',                 c:'cat-salud'       },
+  comida:      { e:'🍽️', l:'Comida',                c:'cat-comida'      },
+  salidas:     { e:'🎉', l:'Salidas',               c:'cat-salidas'     },
+  hogar:       { e:'🏠', l:'Hogar',                 c:'cat-hogar'       },
+  estudios:    { e:'📚', l:'Estudios',              c:'cat-estudios'    },
+  inversion:   { e:'📈', l:'Inversión',             c:'cat-inversion'   },
+  carrito:     { e:'🚗', l:'Amor al carrito',       c:'cat-carrito'     },
+  tarjeta:     { e:'💳', l:'Tarjeta de Crédito',    c:'cat-tarjeta'     },
+  basket:      { e:'🏀', l:'Basket',                c:'cat-basket'      },
+  perros:      { e:'🐾', l:'Apoyo Perros y Gatos',  c:'cat-perros'      },
 };
 const PAY = { efectivo:'💵 Efectivo', tarjeta_debito:'💳 Débito', tarjeta_credito:'🏦 Crédito', yape_plin:'📱 Yape/Plin' };
 
@@ -1246,9 +1258,10 @@ async function cargarResumen() {
 let estMes = hoy().substring(0,7);
 
 const CAT_COLORS = {
-  hormiga: '#ff7eb3', combustible: '#ffd166', salidas: '#5de4c0',
-  comida: '#fb923c', fijos: '#f43f5e', estudios: '#38bdf8',
-  inversion: '#4ade80', otros: '#94a3b8', carrito: '#fb7185', tarjeta: '#818cf8'
+  hormiga: '#ff7eb3', combustible: '#ffd166', movilidad: '#38bdf8',
+  salud: '#34d399', comida: '#fb923c', salidas: '#5de4c0',
+  hogar: '#ff6b6b', estudios: '#a78bfa', inversion: '#4ade80',
+  carrito: '#fb7185', tarjeta: '#818cf8', basket: '#fbbf24', perros: '#a3e635'
 };
 const PAY_ICONS = { efectivo:'💵', tarjeta_debito:'💳', tarjeta_credito:'🏦', yape_plin:'📱' };
 const DIAS_SEMANA = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
