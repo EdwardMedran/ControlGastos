@@ -5,7 +5,7 @@ pipeline {
         REPO_DIR  = "C:/DEV_EDWARD/02_PROYECTOS-PERSONALES/html/ControlGastos"
         GIT_USER  = "EdwardMedran"
         GIT_EMAIL = "edwardgino13@gmail.com"
-        GIT_REPO  = "https://EdwardMedran:${GITHUB_TOKEN}@github.com/EdwardMedran/ControlGastos.git"
+        GITHUB_TOKEN = credentials('github-token')
     }
 
     stages {
@@ -52,7 +52,7 @@ pipeline {
                     git config user.name "${GIT_USER}"
                     git add .
                     git commit -m "Auto deploy #%BUILD_NUMBER% - %DATE% %TIME%" || echo Nada que confirmar
-                    git push ${GIT_REPO} main
+                    git push https://${GIT_USER}:${GITHUB_TOKEN}@github.com/EdwardMedran/ControlGastos.git main
                 """
             }
         }
