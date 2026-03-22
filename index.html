@@ -1951,6 +1951,7 @@ async function deleteGasto(gastoId) {
     });
     toast("Gasto eliminado ✓", "success");
     // Actualizar resumen Y lista de hoy en silencio
+    // Actualizar resumen Y lista de hoy en silencio
     cargarResumen();
     cargarHoy();
   } catch(e) { toast("Error: " + e.message, "error"); }
