@@ -1789,18 +1789,22 @@ async function cargarBarraProgreso() {
 }
 
 function renderBarra(gastos, ingresos, mes) {
-  const pct     = ingresos > 0 ? Math.min((gastos / ingresos) * 100, 100) : 0;
+  const pct      = ingresos > 0 ? Math.min((gastos / ingresos) * 100, 100) : 0;
   const restante = ingresos - gastos;
-  const clase   = pct < 60 ? "verde" : pct < 85 ? "amarillo" : "rojo";
-  const emoji   = pct < 60 ? "🟢" : pct < 85 ? "🟡" : "🔴";
-  const label   = pct >= 100 ? "¡Superaste tus ingresos!" : `Quedan S/ ${restante.toFixed(2)}`;
+  const excedido = gastos - ingresos;
+  const clase    = pct < 60 ? "verde" : pct < 85 ? "amarillo" : "rojo";
+  const emoji    = pct < 60 ? "🟢" : pct < 85 ? "🟡" : "🔴";
+  const labelDer = gastos > ingresos
+    ? `<span style="color:#f43f5e;font-weight:700">- S/ ${excedido.toFixed(2)} excedido</span>`
+    : `<span style="color:#4ade80;font-weight:700">S/ ${restante.toFixed(2)} disponible</span>`;
+  const labelIzq = gastos > ingresos ? "¡Superaste tus ingresos!" : `${pct.toFixed(0)}% consumido`;
   return `
     <div class="barra-header">
       <span class="barra-titulo">${emoji} Gastos vs Ingresos — ${fmtMes(mes)}</span>
-      <span class="barra-nums">S/ ${gastos.toFixed(2)} / S/ ${ingresos.toFixed(2)}</span>
+      ${labelDer}
     </div>
     <div class="barra-track"><div class="barra-fill ${clase}" style="width:${pct.toFixed(1)}%"></div></div>
-    <div class="barra-sub"><span>${pct.toFixed(0)}% consumido</span><span>${label}</span></div>`;
+    <div class="barra-sub"><span>${labelIzq}</span><span style="color:var(--muted)">Ingresos: S/ ${ingresos.toFixed(2)} · Gastos: S/ ${gastos.toFixed(2)}</span></div>`;
 }
 
 // ══════════════════════════════════════════════════════════
@@ -1915,7 +1919,19 @@ async function consultarGastos() {
     const periodo = dia ? fmtFecha(dia) : fmtMes(mes);
     resEl.innerHTML = `<div class="form-card" style="padding:16px 20px;margin-bottom:0;display:flex;gap:24px;align-items:center;flex-wrap:wrap"><span style="font-size:13px;color:var(--muted)">${periodo}</span><span style="font-family:var(--font-display);font-size:18px;font-weight:700">S/ ${total.toFixed(2)}</span><span style="font-size:13px;color:var(--muted)">${gastos.length} gasto${gastos.length!==1?"s":""}</span></div>`;
     renderLista(gastos, listEl, null, true);
+    // Actualizar barra con el mes consultado
+    const mesBarra = dia ? dia.substring(0, 7) : mes;
+    cargarBarraConsultar(total, mesBarra);
   } catch(e) { listEl.innerHTML = empty("⚠️", e.message); }
+}
+
+async function cargarBarraConsultar(totalGastos, mes) {
+  try {
+    const dataIngresos = await lmb("/ingresos", "GET", null, "mes=" + mes);
+    const totalIngresos = (dataIngresos.ingresos || []).reduce((s, i) => s + parseFloat(i.monto || 0), 0);
+    const el = document.getElementById("barra-consultar");
+    if (el) el.innerHTML = renderBarra(totalGastos, totalIngresos, mes);
+  } catch(e) { console.warn("Barra consultar:", e.message); }
 }
 
 async function deleteGasto(gastoId) {
