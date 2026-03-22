@@ -1800,7 +1800,7 @@ function renderBarra(gastos, ingresos, mes) {
   const labelIzq = gastos > ingresos ? "¡Superaste tus ingresos!" : `${pct.toFixed(0)}% consumido`;
   return `
     <div class="barra-header">
-      <span class="barra-titulo">${emoji} Gastos vs Ingresos — ${fmtMes(mes)}</span>
+      <span class="barra-titulo">${emoji} ${fmtMes(mes)}</span>
       ${labelDer}
     </div>
     <div class="barra-track"><div class="barra-fill ${clase}" style="width:${pct.toFixed(1)}%"></div></div>
@@ -1950,7 +1950,6 @@ async function deleteGasto(gastoId) {
       }
     });
     toast("Gasto eliminado ✓", "success");
-    // Actualizar resumen Y lista de hoy en silencio
     // Actualizar resumen Y lista de hoy en silencio
     cargarResumen();
     cargarHoy();
