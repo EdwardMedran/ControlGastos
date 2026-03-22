@@ -182,6 +182,30 @@
     .cat-carrito     { background: rgba(251,113,133,0.15); color: #fb7185; }
     .cat-tarjeta     { background: rgba(99,102,241,0.15);  color: #818cf8; }
 
+    /* BARRA DE PROGRESO INGRESOS */
+    .barra-wrap { margin-bottom: 20px; }
+    .barra-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .barra-titulo { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
+    .barra-nums { font-size: 13px; font-weight: 600; color: var(--text); }
+    .barra-track { width: 100%; height: 10px; background: var(--surface2); border-radius: 6px; overflow: hidden; }
+    .barra-fill { height: 100%; border-radius: 6px; transition: width 0.6s cubic-bezier(0.4,0,0.2,1), background 0.4s; }
+    .barra-fill.verde   { background: linear-gradient(90deg, #22c55e, #4ade80); }
+    .barra-fill.amarillo { background: linear-gradient(90deg, #f59e0b, #facc15); }
+    .barra-fill.rojo    { background: linear-gradient(90deg, #ef4444, #f97316); }
+    .barra-sub { display: flex; justify-content: space-between; margin-top: 6px; font-size: 11px; color: var(--muted); }
+
+    /* INGRESOS */
+    .ingreso-item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 18px; display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
+    .ingreso-icon { width: 42px; height: 42px; border-radius: 12px; background: rgba(34,197,94,0.12); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .ingreso-info { flex: 1; min-width: 0; }
+    .ingreso-titulo { font-weight: 600; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ingreso-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .ingreso-monto { font-family: var(--font-display); font-size: 17px; font-weight: 700; color: #4ade80; flex-shrink: 0; }
+    .cat-ing-salario   { background: rgba(34,197,94,0.12); color: #4ade80; }
+    .cat-ing-freelance { background: rgba(56,189,248,0.12); color: #38bdf8; }
+    .cat-ing-negocio   { background: rgba(251,191,36,0.12); color: #fbbf24; }
+    .cat-ing-otro      { background: rgba(148,163,184,0.12); color: #94a3b8; }
+
     /* PRÉSTAMOS Y AHORROS */
     .modulo-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
     .modulo-tab { flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: none; color: var(--muted); font-family: var(--font-display); font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; text-align: center; }
@@ -313,8 +337,6 @@
     }
   </style>
 </head>
-
-<!-- INICIA EL BODY -->
 <body>
 
 <div id="global-loader">
@@ -411,6 +433,10 @@
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 9V7a5 5 0 00-10 0v2"/><rect x="3" y="9" width="18" height="13" rx="2"/></svg>
       Préstamos
     </button>
+    <button class="hmenu-item" id="nav-ing" onclick="showView('ingresos')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      Ingresos
+    </button>
     <button class="hmenu-item" id="nav-aho" onclick="showView('ahorros')">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 100 20A10 10 0 0012 2z"/><path d="M12 6v6l4 2"/></svg>
       Ahorros
@@ -428,6 +454,7 @@
     <div id="view-registrar">
       <div class="page-header"><h1>Nuevo Gasto</h1><p>Registra un gasto de forma rápida y organizada</p></div>
 
+      <div id="barra-registrar" class="barra-wrap form-card" style="padding:16px 20px;margin-bottom:20px"></div>
       <div class="resumen-grid">
         <div class="resumen-card"><div class="rc-label">Total del mes</div><div class="rc-value" id="res-total">—</div><div class="rc-sub" id="res-mes">—</div></div>
         <div class="resumen-card"><div class="rc-label">Cantidad gastos</div><div class="rc-value" id="res-cant">—</div><div class="rc-sub">este mes</div></div>
@@ -449,17 +476,14 @@
               <option value="" disabled selected>Seleccionar categoría</option>
               <option value="hormiga">🐜 Gastos Hormiga</option>
               <option value="combustible">⛽ Combustible</option>
-              <option value="movilidad">🚌 Movilidad</option>
-              <option value="salud">🏥 Salud</option>
-              <option value="comida">🍽️ Comida</option>
               <option value="salidas">🎉 Salidas</option>
-              <option value="hogar">🏠 Hogar</option>
+              <option value="comida">🍽️ Comida</option>
+              <option value="fijos">🏠 Gastos Fijos</option>
               <option value="estudios">📚 Estudios</option>
               <option value="inversion">📈 Inversión</option>
+              <option value="otros">📦 Otros</option>
               <option value="carrito">🚗 Amor al carrito</option>
               <option value="tarjeta">💳 Tarjeta de Crédito</option>
-              <option value="basket">🏀 Basket</option>
-              <option value="perros">🐾 Apoyo Perros y Gatos</option>
             </select>
             <span class="field-error">Selecciona una categoría</span>
           </div>
@@ -514,6 +538,7 @@
     <!-- VISTA CONSULTAR -->
     <div id="view-consultar" style="display:none">
       <div class="page-header"><h1>Consultar Gastos</h1><p>Filtra tus gastos por mes, día y categoría</p></div>
+      <div id="barra-consultar" class="barra-wrap form-card" style="padding:16px 20px;margin-bottom:20px"></div>
       <div class="form-card" style="margin-bottom:28px">
         <div class="section-title">Filtros</div>
         <div class="grid-2">
@@ -532,17 +557,14 @@
             <option value="">Todas</option>
             <option value="hormiga">🐜 Gastos Hormiga</option>
             <option value="combustible">⛽ Combustible</option>
-            <option value="movilidad">🚌 Movilidad</option>
-            <option value="salud">🏥 Salud</option>
-            <option value="comida">🍽️ Comida</option>
             <option value="salidas">🎉 Salidas</option>
-            <option value="hogar">🏠 Hogar</option>
+            <option value="comida">🍽️ Comida</option>
+            <option value="fijos">🏠 Gastos Fijos</option>
             <option value="estudios">📚 Estudios</option>
             <option value="inversion">📈 Inversión</option>
+            <option value="otros">📦 Otros</option>
             <option value="carrito">🚗 Amor al carrito</option>
             <option value="tarjeta">💳 Tarjeta de Crédito</option>
-            <option value="basket">🏀 Basket</option>
-            <option value="perros">🐾 Apoyo Perros y Gatos</option>
           </select>
         </div>
       </div>
@@ -704,6 +726,59 @@
       <div id="aho-list"><div class="empty-state"><div class="empty-icon">💰</div><p>Sin movimientos registrados</p></div></div>
     </div>
 
+    <!-- VISTA INGRESOS -->
+    <div id="view-ingresos" style="display:none">
+      <div class="page-header"><h1>Ingresos</h1><p>Registra tus fuentes de dinero del mes</p></div>
+
+      <div id="barra-ingresos" class="barra-wrap form-card" style="padding:16px 20px;margin-bottom:20px"></div>
+
+      <!-- Formulario -->
+      <div class="form-card" style="margin-bottom:24px">
+        <div class="section-title">Nuevo ingreso</div>
+        <div class="grid-2">
+          <div class="field" id="fi-titulo">
+            <label>Título *</label>
+            <input type="text" id="ing-titulo" placeholder="Ej: Salario marzo, Proyecto web..." maxlength="60" />
+            <span class="field-error">Título requerido</span>
+          </div>
+          <div class="field" id="fi-cat">
+            <label>Categoría *</label>
+            <select id="ing-categoria">
+              <option value="" disabled selected>Seleccionar</option>
+              <option value="salario">💼 Salario</option>
+              <option value="freelance">💻 Freelance</option>
+              <option value="negocio">🏪 Negocio</option>
+              <option value="otro">📦 Otro</option>
+            </select>
+            <span class="field-error">Categoría requerida</span>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="field" id="fi-monto">
+            <label>Monto *</label>
+            <div class="amount-wrap"><span class="currency">S/</span><input type="number" id="ing-monto" placeholder="0.00" step="0.01" min="0" /></div>
+            <span class="field-error">Monto inválido</span>
+          </div>
+          <div class="field" id="fi-fecha">
+            <label>Fecha *</label>
+            <input type="date" id="ing-fecha" />
+            <span class="field-error">Fecha requerida</span>
+          </div>
+        </div>
+        <div class="submit-area">
+          <button class="btn-clear" onclick="limpiarIngreso()">Limpiar</button>
+          <button class="btn-submit" id="btn-ing-save" onclick="guardarIngreso()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Registrar
+          </button>
+        </div>
+      </div>
+
+      <!-- Lista -->
+      <div class="recent-header"><h2>Ingresos del mes</h2><span class="recent-count" id="ing-count">—</span></div>
+      <div id="ing-list"><div class="empty-state"><div class="empty-icon">💰</div><p>Sin ingresos registrados este mes</p></div></div>
+    </div>
+
   </main>
 </div>
 
@@ -815,17 +890,14 @@
           <select id="edit-categoria">
             <option value="hormiga">🐜 Gastos Hormiga</option>
             <option value="combustible">⛽ Combustible</option>
-            <option value="movilidad">🚌 Movilidad</option>
-            <option value="salud">🏥 Salud</option>
-            <option value="comida">🍽️ Comida</option>
             <option value="salidas">🎉 Salidas</option>
-            <option value="hogar">🏠 Hogar</option>
+            <option value="comida">🍽️ Comida</option>
+            <option value="fijos">🏠 Gastos Fijos</option>
             <option value="estudios">📚 Estudios</option>
             <option value="inversion">📈 Inversión</option>
+            <option value="otros">📦 Otros</option>
             <option value="carrito">🚗 Amor al carrito</option>
             <option value="tarjeta">💳 Tarjeta de Crédito</option>
-            <option value="basket">🏀 Basket</option>
-            <option value="perros">🐾 Apoyo Perros y Gatos</option>
           </select>
         </div>
       </div>
@@ -911,19 +983,16 @@ const CFG = {
 // ══════════════════════════════════════════
 
 const CAT = {
-  hormiga:     { e:'🐜', l:'Gastos Hormiga',       c:'cat-hormiga'     },
-  combustible: { e:'⛽', l:'Combustible',           c:'cat-combustible' },
-  movilidad:   { e:'🚌', l:'Movilidad',             c:'cat-movilidad'   },
-  salud:       { e:'🏥', l:'Salud',                 c:'cat-salud'       },
-  comida:      { e:'🍽️', l:'Comida',                c:'cat-comida'      },
-  salidas:     { e:'🎉', l:'Salidas',               c:'cat-salidas'     },
-  hogar:       { e:'🏠', l:'Hogar',                 c:'cat-hogar'       },
-  estudios:    { e:'📚', l:'Estudios',              c:'cat-estudios'    },
-  inversion:   { e:'📈', l:'Inversión',             c:'cat-inversion'   },
-  carrito:     { e:'🚗', l:'Amor al carrito',       c:'cat-carrito'     },
-  tarjeta:     { e:'💳', l:'Tarjeta de Crédito',    c:'cat-tarjeta'     },
-  basket:      { e:'🏀', l:'Basket',                c:'cat-basket'      },
-  perros:      { e:'🐾', l:'Apoyo Perros y Gatos',  c:'cat-perros'      },
+  hormiga:     { e:'🐜', l:'Gastos Hormiga', c:'cat-hormiga'     },
+  combustible: { e:'⛽', l:'Combustible',     c:'cat-combustible' },
+  salidas:     { e:'🎉', l:'Salidas',         c:'cat-salidas'     },
+  comida:      { e:'🍽️', l:'Comida',          c:'cat-comida'      },
+  fijos:       { e:'🏠', l:'Gastos Fijos',    c:'cat-fijos'       },
+  estudios:    { e:'📚', l:'Estudios',        c:'cat-estudios'    },
+  inversion:   { e:'📈', l:'Inversión',       c:'cat-inversion'   },
+  otros:       { e:'📦', l:'Otros',           c:'cat-otros'       },
+  carrito:     { e:'🚗', l:'Amor al carrito',   c:'cat-carrito'  },
+  tarjeta:     { e:'💳', l:'Tarjeta de Crédito', c:'cat-tarjeta'  },
 };
 const PAY = { efectivo:'💵 Efectivo', tarjeta_debito:'💳 Débito', tarjeta_credito:'🏦 Crédito', yape_plin:'📱 Yape/Plin' };
 
@@ -996,14 +1065,18 @@ function showApp() {
   document.getElementById("view-estadisticas").style.display = "none";
   document.getElementById("view-prestamos").style.display   = "none";
   document.getElementById("view-ahorros").style.display     = "none";
+  document.getElementById("view-ingresos").style.display    = "none";
   document.getElementById("nav-reg").classList.add("active");
   document.getElementById("nav-con")?.classList.remove("active");
   document.getElementById("nav-est")?.classList.remove("active");
   document.getElementById("nav-pre")?.classList.remove("active");
   document.getElementById("nav-aho")?.classList.remove("active");
+  document.getElementById("nav-ing")?.classList.remove("active");
+  document.getElementById("ing-fecha").value  = hoy();
   startSessionTimer();
   cargarResumen();
   cargarHoy();
+  cargarBarraProgreso();
 }
 
 function toggleMenu() {
@@ -1027,16 +1100,17 @@ document.addEventListener("click", (e) => {
 
 function showView(v) {
   closeMenu();
-  ["registrar","consultar","estadisticas","prestamos","ahorros"].forEach(id => {
+  ["registrar","consultar","estadisticas","prestamos","ahorros","ingresos"].forEach(id => {
     document.getElementById("view-" + id).style.display = v === id ? "block" : "none";
   });
-  const navMap = { registrar:"nav-reg", consultar:"nav-con", estadisticas:"nav-est", prestamos:"nav-pre", ahorros:"nav-aho" };
+  const navMap = { registrar:"nav-reg", consultar:"nav-con", estadisticas:"nav-est", prestamos:"nav-pre", ahorros:"nav-aho", ingresos:"nav-ing" };
   Object.values(navMap).forEach(id => document.getElementById(id)?.classList.remove("active"));
   document.getElementById(navMap[v])?.classList.add("active");
   if (v === "consultar")    { document.getElementById("filtro-mes").value = hoy().substring(0,7); document.getElementById("filtro-dia").value = ""; consultarGastos(); }
   if (v === "estadisticas") cargarEstadisticas();
   if (v === "prestamos")    cargarPrestamos();
   if (v === "ahorros")      cargarAhorros();
+  if (v === "ingresos")     cargarIngresos();
 }
 
 function setUserUI(n) { document.getElementById("user-name").textContent = n; document.getElementById("user-avatar").textContent = n.charAt(0).toUpperCase(); }
@@ -1260,10 +1334,9 @@ async function cargarResumen() {
 let estMes = hoy().substring(0,7);
 
 const CAT_COLORS = {
-  hormiga: '#ff7eb3', combustible: '#ffd166', movilidad: '#38bdf8',
-  salud: '#34d399', comida: '#fb923c', salidas: '#5de4c0',
-  hogar: '#ff6b6b', estudios: '#a78bfa', inversion: '#4ade80',
-  carrito: '#fb7185', tarjeta: '#818cf8', basket: '#fbbf24', perros: '#a3e635'
+  hormiga: '#ff7eb3', combustible: '#ffd166', salidas: '#5de4c0',
+  comida: '#fb923c', fijos: '#f43f5e', estudios: '#38bdf8',
+  inversion: '#4ade80', otros: '#94a3b8', carrito: '#fb7185', tarjeta: '#818cf8'
 };
 const PAY_ICONS = { efectivo:'💵', tarjeta_debito:'💳', tarjeta_credito:'🏦', yape_plin:'📱' };
 const DIAS_SEMANA = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
@@ -1327,7 +1400,7 @@ function renderEstadisticas(gastos) {
   const catHTML = Object.entries(porCat)
     .sort((a,b) => b[1]-a[1])
     .map(([cat, val]) => {
-      const cfg = CAT[cat] || { e:'📦', l: cat || 'Otro', c:'cat-otros' };
+      const cfg = CAT[cat] || CAT.otros;
       const pct = (val / maxCat * 100).toFixed(1);
       const color = CAT_COLORS[cat] || '#94a3b8';
       return `<div class="est-bar-row">
@@ -1382,7 +1455,7 @@ function renderEstadisticas(gastos) {
   // Top 5 gastos
   const top5 = [...gastos].sort((a,b) => parseFloat(b.monto)-parseFloat(a.monto)).slice(0,5);
   const top5HTML = top5.map((g, i) => {
-    const cat = CAT[g.categoria] || { e:'📦', l: g.categoria || 'Otro', c:'cat-otros' };
+    const cat = CAT[g.categoria] || CAT.otros;
     return `<div class="est-top-item">
       <div class="est-top-num">#${i+1}</div>
       <div class="est-top-info">
@@ -1694,6 +1767,123 @@ async function guardarEdicionAhorro() {
   finally { btn.disabled = false; btn.innerHTML = "Guardar cambios"; }
 }
 
+
+// ══════════════════════════════════════════════════════════
+//  BARRA DE PROGRESO — INGRESOS vs GASTOS
+// ══════════════════════════════════════════════════════════
+async function cargarBarraProgreso() {
+  const mes = hoy().substring(0, 7);
+  try {
+    const [dataGastos, dataIngresos] = await Promise.all([
+      lmb("/gastos/resumen", "GET", null, "mes=" + mes),
+      lmb("/ingresos", "GET", null, "mes=" + mes)
+    ]);
+    const totalGastos   = parseFloat(dataGastos.totalGeneral || 0);
+    const totalIngresos = (dataIngresos.ingresos || []).reduce((s, i) => s + parseFloat(i.monto || 0), 0);
+    const html = renderBarra(totalGastos, totalIngresos, mes);
+    ["barra-registrar", "barra-consultar", "barra-ingresos"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = html;
+    });
+  } catch(e) { console.warn("Barra progreso:", e.message); }
+}
+
+function renderBarra(gastos, ingresos, mes) {
+  const pct     = ingresos > 0 ? Math.min((gastos / ingresos) * 100, 100) : 0;
+  const restante = ingresos - gastos;
+  const clase   = pct < 60 ? "verde" : pct < 85 ? "amarillo" : "rojo";
+  const emoji   = pct < 60 ? "🟢" : pct < 85 ? "🟡" : "🔴";
+  const label   = pct >= 100 ? "¡Superaste tus ingresos!" : `Quedan S/ ${restante.toFixed(2)}`;
+  return `
+    <div class="barra-header">
+      <span class="barra-titulo">${emoji} Gastos vs Ingresos — ${fmtMes(mes)}</span>
+      <span class="barra-nums">S/ ${gastos.toFixed(2)} / S/ ${ingresos.toFixed(2)}</span>
+    </div>
+    <div class="barra-track"><div class="barra-fill ${clase}" style="width:${pct.toFixed(1)}%"></div></div>
+    <div class="barra-sub"><span>${pct.toFixed(0)}% consumido</span><span>${label}</span></div>`;
+}
+
+// ══════════════════════════════════════════════════════════
+//  INGRESOS
+// ══════════════════════════════════════════════════════════
+const CAT_ING = {
+  salario:   { e:'💼', l:'Salario',   c:'cat-ing-salario'   },
+  freelance: { e:'💻', l:'Freelance', c:'cat-ing-freelance' },
+  negocio:   { e:'🏪', l:'Negocio',  c:'cat-ing-negocio'   },
+  otro:      { e:'📦', l:'Otro',      c:'cat-ing-otro'      },
+};
+
+function limpiarIngreso() {
+  ["ing-titulo","ing-monto"].forEach(id => { const el=document.getElementById(id); if(el) el.value=""; });
+  document.getElementById("ing-fecha").value = hoy();
+  document.getElementById("ing-categoria").value = "";
+  clrErr(["fi-titulo","fi-cat","fi-monto","fi-fecha"]);
+}
+
+async function guardarIngreso() {
+  const titulo    = g("ing-titulo");
+  const categoria = document.getElementById("ing-categoria").value;
+  const monto     = g("ing-monto");
+  const fecha     = g("ing-fecha");
+  let ok = true;
+  clrErr(["fi-titulo","fi-cat","fi-monto","fi-fecha"]);
+  if (!titulo)               { setErr("fi-titulo"); ok = false; }
+  if (!categoria)            { setErr("fi-cat");    ok = false; }
+  if (!monto || +monto <= 0) { setErr("fi-monto");  ok = false; }
+  if (!fecha)                { setErr("fi-fecha");  ok = false; }
+  if (!ok) return;
+  const btn = document.getElementById("btn-ing-save");
+  btn.disabled = true; btn.innerHTML = "⏳ Guardando...";
+  try {
+    await lmb("/ingresos", "POST", { titulo, categoria, monto: parseFloat(monto), fecha });
+    limpiarIngreso();
+    toast("Ingreso registrado ✓", "success");
+    cargarIngresos();
+    cargarBarraProgreso();
+  } catch(e) { toast("Error: " + e.message, "error"); }
+  finally { btn.disabled = false; btn.innerHTML = "Registrar"; }
+}
+
+async function cargarIngresos() {
+  const el  = document.getElementById("ing-list");
+  const mes = hoy().substring(0, 7);
+  el.innerHTML = skels(3);
+  try {
+    const data   = await lmb("/ingresos", "GET", null, "mes=" + mes);
+    const lista  = data.ingresos || [];
+    const total  = lista.reduce((s, i) => s + parseFloat(i.monto || 0), 0);
+    document.getElementById("ing-count").textContent = lista.length + " ingreso" + (lista.length !== 1 ? "s" : "");
+    if (!lista.length) { el.innerHTML = `<div class="empty-state"><div class="empty-icon">💰</div><p>Sin ingresos este mes</p></div>`; return; }
+    el.innerHTML = lista.map(i => {
+      const cat = CAT_ING[i.categoria] || CAT_ING.otro;
+      return `<div class="ingreso-item">
+        <div class="ingreso-icon">${cat.e}</div>
+        <div class="ingreso-info">
+          <div class="ingreso-titulo">${esc(i.titulo)}</div>
+          <div class="ingreso-meta"><span class="cat-pill ${cat.c}">${cat.l}</span> · 📅 ${fmtFecha(i.fecha)}</div>
+        </div>
+        <div class="ingreso-monto">+ S/ ${parseFloat(i.monto).toFixed(2)}</div>
+        <button class="expense-delete" onclick="eliminarIngreso('${i.ingresoId}')" title="Eliminar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+        </button>
+      </div>`;
+    }).join("") + `<div class="form-card" style="padding:14px 18px;margin-top:16px;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:13px;color:var(--muted)">Total ${fmtMes(mes)}</span>
+      <span style="font-family:var(--font-display);font-size:20px;font-weight:700;color:#4ade80">S/ ${total.toFixed(2)}</span>
+    </div>`;
+  } catch(e) { el.innerHTML = empty("⚠️", e.message); }
+}
+
+async function eliminarIngreso(id) {
+  if (!confirm("¿Eliminar este ingreso?")) return;
+  try {
+    await lmb("/ingresos/" + encodeURIComponent(id), "DELETE");
+    toast("Ingreso eliminado", "error");
+    cargarIngresos();
+    cargarBarraProgreso();
+  } catch(e) { toast("Error: " + e.message, "error"); }
+}
+
 function onFiltroMesChange() {
   consultarGastos();
 }
@@ -1757,7 +1947,7 @@ function renderLista(gastos, el, countId, allowDelete = false) {
 }
 
 function cardHTML(g, allowDelete = false) {
-  const cat  = CAT[g.categoria] || { e:'📦', l: g.categoria || 'Otro', c:'cat-otros' };
+  const cat  = CAT[g.categoria] || CAT.otros;
   const desc = g.descripcion ? `<span style="font-size:12px;color:var(--muted);display:block;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:320px">${esc(g.descripcion)}</span>` : "";
   const lugar = g.lugar ? `<span class="expense-date">📍 ${esc(g.lugar)}</span>` : "";
   const deleteBtn = allowDelete ? `
