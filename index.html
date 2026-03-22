@@ -184,9 +184,9 @@
 
     /* BARRA DE PROGRESO INGRESOS */
     .barra-wrap { margin-bottom: 20px; }
-    .barra-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .barra-titulo { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; }
-    .barra-nums { font-size: 13px; font-weight: 600; color: var(--text); }
+    .barra-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 8px; }
+    .barra-titulo { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
+    .barra-nums { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; flex-shrink: 0; }
     .barra-track { width: 100%; height: 10px; background: var(--surface2); border-radius: 6px; overflow: hidden; }
     .barra-fill { height: 100%; border-radius: 6px; transition: width 0.6s cubic-bezier(0.4,0,0.2,1), background 0.4s; }
     .barra-fill.verde   { background: linear-gradient(90deg, #22c55e, #4ade80); }
@@ -1795,8 +1795,8 @@ function renderBarra(gastos, ingresos, mes) {
   const clase    = pct < 60 ? "verde" : pct < 85 ? "amarillo" : "rojo";
   const emoji    = pct < 60 ? "🟢" : pct < 85 ? "🟡" : "🔴";
   const labelDer = gastos > ingresos
-    ? `<span style="color:#f43f5e;font-weight:700">- S/ ${excedido.toFixed(2)} excedido</span>`
-    : `<span style="color:#4ade80;font-weight:700">S/ ${restante.toFixed(2)} disponible</span>`;
+    ? `<span style="color:#f43f5e;font-weight:700;font-size:13px;white-space:nowrap;flex-shrink:0">- S/ ${excedido.toFixed(2)} excedido</span>`
+    : `<span style="color:#4ade80;font-weight:700;font-size:13px;white-space:nowrap;flex-shrink:0">S/ ${restante.toFixed(2)} disponible</span>`;
   const labelIzq = gastos > ingresos ? "¡Superaste tus ingresos!" : `${pct.toFixed(0)}% consumido`;
   return `
     <div class="barra-header">
