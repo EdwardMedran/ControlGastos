@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Arquitectura — Control de Gastos</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #0f1117;
+    --surface:  #181c27;
+    --surface2: #1e2235;
+    --border:   rgba(255,255,255,0.08);
+    --text:     #f1f0ee;
+    --muted:    #8a8fa8;
+    --accent:   #f97316;
+    --font-d:   'Syne', sans-serif;
+    --font-b:   'DM Sans', sans-serif;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-b);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 16px 64px;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 55% 45% at 15% 10%, rgba(249,115,22,0.08) 0%, transparent 55%),
+      radial-gradient(ellipse 45% 40% at 85% 85%, rgba(56,189,248,0.06) 0%, transparent 55%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 1100px;
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .header-eyebrow {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .header h1 {
+    font-family: var(--font-d);
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    background: linear-gradient(135deg, #f1f0ee 30%, var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+  }
+  .header p {
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  /* MAIN GRID */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* DIAGRAM AREA */
+  .diagram-area {
+    background: var(--surface);
+    border: 1px solid rgba(249,115,22,0.1);
+    border-radius: 20px;
+    padding: 28px;
+    position: relative;
+  }
+
+  .diagram-hint {
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 20px;
+    letter-spacing: 0.5px;
+  }
+  .diagram-hint span {
+    display: inline-block;
+    background: rgba(249,115,22,0.1);
+    border: 1px solid rgba(249,115,22,0.2);
+    border-radius: 20px;
+    padding: 3px 12px;
+    color: var(--accent);
+  }
+
+  /* SVG */
+  #arch-svg {
+    width: 100%;
+    display: block;
+  }
+
+  .node {
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+  .node:hover { opacity: 0.88; }
+  .node.active rect, .node.active path { stroke-width: 2 !important; }
+
+  /* FLOW STEPS */
+  .flow-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+  }
+  .step-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-family: var(--font-b);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .step-btn:hover, .step-btn.active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(249,115,22,0.08);
+  }
+  .step-num {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(249,115,22,0.15);
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* INFO PANEL */
+  .info-panel {
+    position: sticky;
+    top: 24px;
+    background: var(--surface);
+    border: 1px solid rgba(249,115,22,0.1);
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .info-default {
+    padding: 32px 24px;
+    text-align: center;
+  }
+  .info-default .idle-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+  }
+  .info-default p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .info-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .info-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    margin-bottom: 10px;
+  }
+  .info-title {
+    font-family: var(--font-d);
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .info-subtitle {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .info-body {
+    padding: 20px 24px;
+  }
+  .info-desc {
+    font-size: 13px;
+    color: #c4c7d4;
+    line-height: 1.75;
+    margin-bottom: 18px;
+  }
+
+  .info-section-title {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .tech-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+  .tech-pill {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .ask-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #f97316, #fb923c);
+    border: none;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-family: var(--font-d);
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .ask-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  /* LEGEND */
+  .legend {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 32px;
+    padding: 16px 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .legend-line {
+    width: 28px;
+    height: 2px;
+    border-radius: 1px;
+  }
+  .legend-line.solid { background: rgba(255,255,255,0.2); }
+  .legend-line.dashed { background: repeating-linear-gradient(90deg, #f97316 0, #f97316 4px, transparent 4px, transparent 8px); }
+  .legend-line.blue-dashed { background: repeating-linear-gradient(90deg, #38bdf8 0, #38bdf8 4px, transparent 4px, transparent 8px); }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+
+  @media (max-width: 800px) {
+    .main-grid { grid-template-columns: 1fr; }
+    .info-panel { position: static; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-eyebrow">Diagrama de Arquitectura</div>
+    <h1>Control de Gastos</h1>
+    <p>Toca cualquier componente para entender qué hace y por qué existe</p>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="main-grid">
+
+    <!-- DIAGRAM -->
+    <div class="diagram-area">
+      <p class="diagram-hint"><span>Click en cualquier caja para ver la explicación →</span></p>
+
+      <svg id="arch-svg" viewBox="0 0 620 560">
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+        </defs>
+
+        <!-- ══ FLECHAS ════════════════════════════════════════════════════ -->
+
+        <!-- Usuario → GitHub Pages -->
+        <line x1="100" y1="68" x2="100" y2="104" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" marker-end="url(#arr)" fill="none"/>
+        <text x="108" y="92" font-size="10" fill="rgba(255,255,255,0.3)" font-family="DM Sans">1 · abre la app</text>
+
+        <!-- GitHub Pages → Cognito -->
+        <line x1="195" y1="143" x2="280" y2="143" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" marker-end="url(#arr)" fill="none"/>
+        <text x="205" y="136" font-size="10" fill="rgba(255,255,255,0.3)" font-family="DM Sans">2 · login</text>
+
+        <!-- Cognito → Lambda (token JWT, punteado) -->
+        <path d="M390 173 L390 260 L195 260" stroke="#f97316" stroke-width="1.2" stroke-dasharray="5 3" marker-end="url(#arr)" fill="none" opacity="0.7"/>
+        <text x="320" y="255" font-size="10" fill="#f97316" font-family="DM Sans" opacity="0.9">4 · token JWT</text>
+
+        <!-- GitHub Pages → Lambda -->
+        <line x1="100" y1="173" x2="100" y2="238" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" marker-end="url(#arr)" fill="none"/>
+        <text x="108" y="212" font-size="10" fill="rgba(255,255,255,0.3)" font-family="DM Sans">3 · petición HTTP</text>
+
+        <!-- Lambda → DynamoDB -->
+        <line x1="100" y1="288" x2="100" y2="370" stroke="rgba(255,255,255,0.2)" stroke-width="1.5" marker-end="url(#arr)" fill="none"/>
+        <text x="108" y="334" font-size="10" fill="rgba(255,255,255,0.3)" font-family="DM Sans">5 · guarda datos</text>
+
+        <!-- DynamoDB → Tablas -->
+        <line x1="100" y1="430" x2="100" y2="460" stroke="rgba(255,255,255,0.15)" stroke-width="1" marker-end="url(#arr)" fill="none"/>
+
+        <!-- Lambda → CloudWatch (punteado) -->
+        <path d="M195 265 L460 265 L460 370" stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-dasharray="4 3" marker-end="url(#arr)" fill="none"/>
+        <text x="300" y="258" font-size="10" fill="rgba(255,255,255,0.2)" font-family="DM Sans">logs</text>
+
+        <!-- Jenkins → GitHub (deploy, azul) -->
+        <path d="M530 143 L530 50 L195 50" stroke="#38bdf8" stroke-width="1.3" stroke-dasharray="5 3" marker-end="url(#arr)" fill="none" opacity="0.6"/>
+        <text x="320" y="44" font-size="10" fill="#38bdf8" font-family="DM Sans" opacity="0.8">git push → deploy</text>
+
+        <!-- ══ REGIÓN AWS (fondo) ════════════════════════════════════════ -->
+        <rect x="12" y="220" width="590" height="260" rx="10"
+              fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1" stroke-dasharray="6 4"/>
+        <text x="22" y="214" font-size="10" fill="rgba(255,255,255,0.2)" font-family="DM Sans">☁  AWS Cloud — sa-east-1 (São Paulo)</text>
+
+        <!-- ══ USUARIO ════════════════════════════════════════════════════ -->
+        <g class="node" id="n-user" onclick="select('user')">
+          <rect x="30" y="24" width="140" height="44" rx="8"
+                fill="#1e2235" stroke="rgba(255,255,255,0.12)" stroke-width="0.8"/>
+          <text x="100" y="44" text-anchor="middle" font-size="13" font-weight="700"
+                font-family="Syne" fill="#f1f0ee">Usuario</text>
+          <text x="100" y="60" text-anchor="middle" font-size="11"
+                font-family="DM Sans" fill="#8a8fa8">Abre la app</text>
+        </g>
+
+        <!-- ══ GITHUB PAGES (FRONTEND) ══════════════════════════════════ -->
+        <g class="node" id="n-github" onclick="select('github')">
+          <rect x="30" y="104" width="165" height="69" rx="8"
+                fill="#0d1e35" stroke="#378ADD" stroke-width="0.8"/>
+          <text x="112" y="126" text-anchor="middle" font-size="13" font-weight="700"
+                font-family="Syne" fill="#85B7EB">GitHub Pages</text>
+          <text x="112" y="143" text-anchor="middle" font-size="11"
+                font-family="DM Sans" fill="#5a8fc0">HTML · CSS · JS</text>
+          <text x="112" y="158" text-anchor="middle" font-size="11"
+                font-family="DM Sans" fill="#5a8fc0">index.html (PWA)</text>
+        </g>
+
+        <!-- ══ COGNITO ════════════════════════════════════════════════════ -->
+        <g class="node" id="n-cognito" onclick="select('cognito')">
+          <rect x="280" y="104" width="165" height="69" rx="8"
+                fill="#1c1200" stroke="#BA7517" stroke-width="0.8"/>
+          <text x="362" y="126" text-anchor="middle" font-size="13" font-weight="700"
+                font-family="Syne" fill="#EF9F27">Amazon Cognito</text>
+          <text x="362" y="143" text-anchor="middle" font-size="11"
+                font-family="DM Sans" fill="#b37c15">User Pools</text>
+          <text x="362" y="158" text-anchor="middle" font-size="11"
+                font-family="DM Sans" fill="#b37c15">JWT Tokens</text>
+        </g>
+
+        <!-- ══ JENKINS (CI/CD) ═══════════════════════════════════════════ -->
+        <g class="node" id="n-jenkins" onclick="select('jenkins')">
+          <rect x="460" y="104" width="145" height="69" rx="8"
+                fill="#041520" stroke="#185FA5" stroke-width="0.8"/>
+          <text x="532" y="126" text-anchor="middle" font-size="13" font-weight="700"
+                font-family="Syne" fill="#38bdf8">Jenkins</text>
+          <text x="532" y="143" text-anchor="middle" font-size="11"
+                font-family="DM Sans" fill="#2d8fb0">CI/CD local</text>
+          <text x="532" y="158" text-anchor="middle" font-size="11"
+                font-family="DM Sans" fill="#2d8fb0">Pipeline declarativo</text>
+        </g>
+
+        <!-- ══ LAMBDA ════════════════════════════════════════════════════ -->
+        <g class="node" id="n-lambda" onclick="select('lambda')">
+          <rect x="30" y="238" width="165" height="50" rx="8"
+                fill="#0d1a08" stroke="#639922" stroke-width="0.8"/>
+          <text x="112" y="258" text-anchor="middle" font-size="13" font-weight="700"
+                font-family="Syne" fill="#97C459">AWS Lambda</text>
+          <text x="112" y="276" text-anchor="middle" font-size="11"
+                font-family="DM Sans" fill="#5a8030">Python 3.12 · Serverless</text>
+        </g>
+
+        <!-- ══ DYNAMO ════════════════════════════════════════════════════ -->
+        <g class="node" id="n-dynamo" onclick="select('dynamo')">
+          <rect x="30" y="370" width="165" height="60" rx="8"
+                fill="#1a0814" stroke="#993556" stroke-width="0.8"/>
+          <text x="112" y="393" text-anchor="middle" font-size="13" font-weight="700"
+                font-family="Syne" fill="#ED93B1">Amazon DynamoDB</text>
+          <text x="112" y="410" text-anchor="middle" font-size="11"
+                font-family="DM Sans" fill="#8a4060">4 tablas · NoSQL</text>
+          <text x="112" y="424" text-anchor="middle" font-size="11"
+                font-family="DM Sans" fill="#8a4060">sa-east-1 São Paulo</text>
+        </g>
+
+        <!-- ══ CLOUDWATCH ════════════════════════════════════════════════ -->
+        <g class="node" id="n-cw" onclick="select('cloudwatch')">
+          <rect x="380" y="370" width="165" height="60" rx="8"
+                fill="#1e2235" stroke="rgba(255,255,255,0.1)" stroke-width="0.8"/>
+          <text x="462" y="393" text-anchor="middle" font-size="13" font-weight="700"
+                font-family="Syne" fill="#c4c7d4">CloudWatch</text>
+          <text x="462" y="410" text-anchor="middle" font-size="11"
+                font-family="DM Sans" fill="#8a8fa8">Logs y errores</text>
+          <text x="462" y="424" text-anchor="middle" font-size="11"
+                font-family="DM Sans" fill="#8a8fa8">Monitoreo</text>
+        </g>
+
+        <!-- ══ TABLAS ════════════════════════════════════════════════════ -->
+        <g class="node" id="n-tables" onclick="select('tables')">
+          <rect x="30" y="460" width="165" height="72" rx="8"
+                fill="#140610" stroke="rgba(153,53,86,0.4)" stroke-width="0.6" stroke-dasharray="4 3"/>
+          <text x="112" y="482" text-anchor="middle" font-size="12" font-weight="700"
+                font-family="Syne" fill="#8a4060">Gastos · Ingresos</text>
+          <text x="112" y="498" text-anchor="middle" font-size="11"
+                font-family="DM Sans" fill="#6a3050">Préstamos · Ahorros</text>
+          <text x="112" y="514" text-anchor="middle" font-size="10"
+                font-family="DM Sans" fill="#4a2038">key: userId + id</text>
+          <text x="112" y="526" text-anchor="middle" font-size="9"
+                font-family="DM Sans" fill="#3a1828" font-style="italic">4 tablas en DynamoDB</text>
+        </g>
+
+      </svg>
+
+      <!-- FLOW STEPS -->
+      <div class="flow-steps">
+        <button class="step-btn" onclick="select('user')">
+          <span class="step-num">1</span> Usuario
+        </button>
+        <button class="step-btn" onclick="select('github')">
+          <span class="step-num">2</span> Frontend
+        </button>
+        <button class="step-btn" onclick="select('cognito')">
+          <span class="step-num">3</span> Auth
+        </button>
+        <button class="step-btn" onclick="select('lambda')">
+          <span class="step-num">4</span> Backend
+        </button>
+        <button class="step-btn" onclick="select('dynamo')">
+          <span class="step-num">5</span> DB
+        </button>
+        <button class="step-btn" onclick="select('jenkins')">
+          <span class="step-num">6</span> CI/CD
+        </button>
+        <button class="step-btn" onclick="select('cloudwatch')">
+          <span class="step-num">7</span> Logs
+        </button>
+      </div>
+    </div>
+
+    <!-- INFO PANEL -->
+    <div class="info-panel" id="info-panel">
+      <div class="info-default" id="info-default">
+        <div class="idle-icon">🗺️</div>
+        <p>Hacé click en cualquier componente del diagrama para ver una explicación detallada de qué hace y por qué existe.</p>
+        <br/>
+        <p style="font-size:12px;color:#5a5f72">También podés usar los botones de flujo en la parte inferior del diagrama para recorrer los pasos en orden.</p>
+      </div>
+      <div id="info-content" style="display:none">
+        <div class="info-header">
+          <div class="info-badge" id="i-badge"></div>
+          <div class="info-title" id="i-title"></div>
+          <div class="info-subtitle" id="i-subtitle"></div>
+        </div>
+        <div class="info-body">
+          <div class="info-desc" id="i-desc"></div>
+          <div class="info-section-title">Tecnologías</div>
+          <div class="tech-grid" id="i-tech"></div>
+          <div class="info-section-title" id="i-flow-label" style="margin-top:4px"></div>
+          <div id="i-flow" style="font-size:13px;color:#8a8fa8;line-height:1.7;margin-bottom:18px"></div>
+          <button class="ask-btn" id="i-btn" onclick="openLink()">
+            ¿Cómo funciona esto? → preguntarle a Claude
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-line solid"></div>
+      Flujo principal de datos
+    </div>
+    <div class="legend-item">
+      <div class="legend-line dashed"></div>
+      Token JWT (autenticación)
+    </div>
+    <div class="legend-item">
+      <div class="legend-line blue-dashed"></div>
+      Deploy automático (CI/CD)
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#1a0814;border:1px dashed #993556"></div>
+      Subestructura de DynamoDB
+    </div>
+  </div>
+
+</div>
+
+<script>
+const DATA = {
+  user: {
+    badge: '👤 Punto de entrada',
+    badgeBg: '#1e2235',
+    badgeColor: '#c4c7d4',
+    title: 'El usuario — vos',
+    subtitle: 'Cómo interactúa con la app',
+    desc: 'Todo empieza acá. El usuario abre la app desde su celular o computadora usando cualquier navegador web (Chrome, Safari, Firefox). No necesita instalar nada desde ninguna tienda de aplicaciones.\n\nLa app es una PWA (Progressive Web App) — se puede instalar en la pantalla de inicio del celular igual que una app nativa, pero sin pasar por App Store ni Play Store.',
+    tech: ['Navegador web (Chrome/Safari)', 'iPhone / Android / Desktop', 'PWA instalable', 'Conexión HTTPS'],
+    flowLabel: 'Qué hace el usuario:',
+    flow: '1. Abre la URL de la app\n2. Escribe usuario y contraseña\n3. Registra gastos, consulta, ve estadísticas\n4. La app guarda todo en la nube automáticamente'
+  },
+  github: {
+    badge: '🌐 Frontend',
+    badgeBg: '#0d1e35',
+    badgeColor: '#38bdf8',
+    title: 'GitHub Pages',
+    subtitle: 'Hosting gratuito del frontend',
+    desc: 'GitHub Pages es donde vive el archivo index.html de la app. Es como un servidor web gratuito — cuando abrís la URL, GitHub Pages le manda ese archivo a tu navegador.\n\nTodo el frontend está en un SOLO archivo: HTML (la estructura de lo que ves), CSS (los colores y estilos) y JavaScript (la lógica que hace funcionar todo). No hay React ni frameworks — es JavaScript puro para que sea simple y rápido.',
+    tech: ['HTML5 (estructura)', 'CSS3 (estilos, dark theme)', 'JavaScript Vanilla (lógica)', 'PWA — Manifest.json + Icon.png', 'Syne + DM Sans (Google Fonts)', 'amazon-cognito-identity-js v6'],
+    flowLabel: 'Qué pasa cuando abrís la app:',
+    flow: '1. Tu navegador descarga el index.html desde GitHub Pages\n2. El navegador ejecuta el JS del archivo\n3. El JS verifica si tenés sesión activa en Cognito\n4. Si tenés sesión → muestra la app\n5. Si no → muestra la pantalla de login'
+  },
+  cognito: {
+    badge: '🔐 Autenticación',
+    badgeBg: '#1c1200',
+    badgeColor: '#EF9F27',
+    title: 'Amazon Cognito',
+    subtitle: 'El portero de la app',
+    desc: 'Cognito es el sistema que verifica que sos vos quien dice ser. Cuando escribís usuario y contraseña, Cognito los valida. Si son correctos, te devuelve un JWT Token — un código largo y encriptado que dice "este usuario está autorizado".\n\nEse token va en CADA llamada al servidor (Lambda). Sin Cognito, cualquiera podría leer o modificar los datos de otro usuario. El admin (vos) crea los usuarios manualmente desde la consola de AWS — no hay registro público.',
+    tech: ['Amazon Cognito User Pools', 'JWT (JSON Web Token)', 'Flujo USER_PASSWORD_AUTH', 'Access token: 5 min', 'Refresh token: 60 min mínimo', 'Pool: sa-east-1_psRbaBHIq'],
+    flowLabel: 'Cómo funciona el login:',
+    flow: '1. Usuario escribe usuario + contraseña\n2. La app llama a Cognito con esas credenciales\n3. Cognito valida → devuelve JWT Token\n4. El token se guarda en el navegador\n5. Cada petición a Lambda lleva el token en el header\n6. Si el token expira (5 min) → Lambda rechaza la petición'
+  },
+  lambda: {
+    badge: '⚙️ Backend',
+    badgeBg: '#0d1a08',
+    badgeColor: '#97C459',
+    title: 'AWS Lambda',
+    subtitle: 'El cerebro serverless de la app',
+    desc: 'Lambda es el servidor que procesa todas las peticiones. Es una función Python 3.12 que vive en la nube. Lo genial: no hay un servidor corriendo 24/7. Lambda "despierta" solo cuando la app lo llama, procesa la petición y vuelve a dormirse.\n\nEsto lo hace prácticamente gratis para poco uso (AWS da 1 millón de llamadas gratis por mes). Recibe las peticiones HTTP, verifica el token JWT, y lee o escribe en DynamoDB.',
+    tech: ['Python 3.12', 'AWS Lambda Function URL', 'boto3 (SDK oficial de AWS)', 'Serverless — sin servidor fijo', 'CORS habilitado para GitHub Pages', 'Región sa-east-1'],
+    flowLabel: 'Qué hace Lambda con cada petición:',
+    flow: '1. Recibe la petición HTTP (GET, POST, PUT, DELETE)\n2. Lee el token JWT del header Authorization\n3. Decodifica el token → extrae el userId\n4. Ejecuta la acción (guardar gasto, consultar, etc.)\n5. SIEMPRE filtra por userId → cada usuario ve solo sus datos\n6. Devuelve el resultado en JSON'
+  },
+  dynamo: {
+    badge: '🗄️ Base de datos',
+    badgeBg: '#1a0814',
+    badgeColor: '#ED93B1',
+    title: 'Amazon DynamoDB',
+    subtitle: 'Base de datos NoSQL en la nube',
+    desc: 'DynamoDB es donde se guardan TODOS los datos de la app. Es NoSQL — a diferencia de una base de datos SQL (como MySQL), no tiene tablas con columnas fijas. Cada registro es un documento JSON flexible.\n\nCada ítem tiene siempre un userId (quién es el dueño) y un id único. Lambda filtra por userId en TODAS las consultas, así un usuario nunca puede ver los datos de otro aunque compartan la misma base de datos.',
+    tech: ['Amazon DynamoDB', 'NoSQL — documentos JSON', 'Región: sa-east-1 (São Paulo)', 'Partition key: userId (String)', 'Sort key: gastoId / ingresoId / etc.', 'Free Tier: 25GB + 200M requests/mes'],
+    flowLabel: 'Las 4 tablas:',
+    flow: 'ControlGastos → gastos del usuario\nControlIngresos → salarios y otros ingresos\nControlPrestamos → dinero prestado/recibido\nControlAhorros → depósitos y retiros'
+  },
+  tables: {
+    badge: '📋 Estructura de tablas',
+    badgeBg: '#140610',
+    badgeColor: '#8a4060',
+    title: 'Las 4 tablas de DynamoDB',
+    subtitle: 'Cómo se organizan los datos',
+    desc: 'Cada módulo de la app tiene su propia tabla en DynamoDB. Todas siguen el mismo patrón de claves para garantizar el aislamiento entre usuarios.\n\nLa Partition Key (userId) define de quién son los datos. La Sort Key (gastoId, etc.) identifica cada registro único. Lambda SIEMPRE filtra por userId primero — nunca se puede acceder a datos de otro usuario.',
+    tech: ['ControlGastos (PK: userId, SK: gastoId)', 'ControlIngresos (PK: userId, SK: ingresoId)', 'ControlPrestamos (PK: userId, SK: prestamoId)', 'ControlAhorros (PK: userId, SK: ahorroId)'],
+    flowLabel: 'Ejemplo de un gasto guardado:',
+    flow: '{\n  "userId": "b3dc2a7a-...",  ← dueño del dato\n  "gastoId": "2026-03-24#1711...",\n  "titulo": "Almuerzo",\n  "categoria": "comida",\n  "monto": 25.50,\n  "fecha": "2026-03-24"\n}'
+  },
+  jenkins: {
+    badge: '🚀 CI/CD',
+    badgeBg: '#041520',
+    badgeColor: '#38bdf8',
+    title: 'Jenkins',
+    subtitle: 'Robot de despliegue automático',
+    desc: 'Jenkins es una herramienta de automatización que corre en tu PC local (puerto 8083). Cuando querés publicar cambios, Jenkins ejecuta un pipeline automáticamente.\n\nEl pipeline tiene 4 etapas: Checkout (verifica el repo local), Validar (que index.html, Manifest.json e Icon.png existan), Deploy (git add → commit → push a GitHub) y Verificar (muestra los últimos commits). GitHub Pages detecta el push y actualiza la app en segundos.',
+    tech: ['Jenkins 2.516.1 (Windows)', 'Jenkinsfile declarativo en el repo', 'Git + GitHub', 'localhost:8083', 'GitHub PAT en Jenkins Credentials', 'NO el token en el código'],
+    flowLabel: 'Las 4 etapas del pipeline:',
+    flow: '1. Checkout → verifica el repositorio local\n2. Validar Archivos → index.html, Manifest.json, Icon.png\n3. Deploy → git add + commit + push a GitHub\n4. Verificar → muestra los últimos 3 commits y la URL'
+  },
+  cloudwatch: {
+    badge: '📊 Observabilidad',
+    badgeBg: '#1e2235',
+    badgeColor: '#8a8fa8',
+    title: 'AWS CloudWatch',
+    subtitle: 'Los logs del servidor en producción',
+    desc: 'Cada vez que Lambda ejecuta código, automáticamente manda los logs a CloudWatch. Si algo falla (un error 500, una excepción en Python, datos inesperados), CloudWatch guarda exactamente qué pasó, en qué momento y qué datos había.\n\nEs como el console.log() del backend pero en producción. Podés ir a la consola de AWS → CloudWatch → Log groups → buscar tu función Lambda y ver el historial completo de ejecuciones.',
+    tech: ['AWS CloudWatch Logs', 'Lambda → CloudWatch automático', 'Log groups por función', 'Retention: 1-90 días configurable', 'Gratis en Free Tier (primeros 5GB)'],
+    flowLabel: 'Cómo debuggear con CloudWatch:',
+    flow: '1. Ir a AWS Console → CloudWatch\n2. Ir a Log groups\n3. Buscar /aws/lambda/[nombre-función]\n4. Ver los Log Streams (por ejecución)\n5. Cada print() de Python aparece acá\n6. Los errores muestran el traceback completo'
+  }
+};
+
+let currentKey = null;
+
+function select(key) {
+  if (!DATA[key]) return;
+  currentKey = key;
+
+  const d = DATA[key];
+
+  document.getElementById('info-default').style.display = 'none';
+  document.getElementById('info-content').style.display = 'block';
+
+  document.getElementById('i-badge').textContent = d.badge;
+  document.getElementById('i-badge').style.background = d.badgeBg;
+  document.getElementById('i-badge').style.color = d.badgeColor;
+  document.getElementById('i-badge').style.border = '1px solid ' + d.badgeColor + '40';
+
+  document.getElementById('i-title').textContent = d.title;
+  document.getElementById('i-subtitle').textContent = d.subtitle;
+  document.getElementById('i-desc').textContent = d.desc;
+
+  document.getElementById('i-tech').innerHTML = d.tech
+    .map(t => `<span class="tech-pill">${t}</span>`).join('');
+
+  document.getElementById('i-flow-label').textContent = d.flowLabel;
+  document.getElementById('i-flow').style.whiteSpace = 'pre-line';
+  document.getElementById('i-flow').textContent = d.flow;
+
+  // Highlight active node
+  document.querySelectorAll('.node').forEach(n => n.classList.remove('active'));
+  const nodeId = {
+    user: 'n-user', github: 'n-github', cognito: 'n-cognito',
+    lambda: 'n-lambda', dynamo: 'n-dynamo', jenkins: 'n-jenkins',
+    cloudwatch: 'n-cw', tables: 'n-tables'
+  };
+  if (nodeId[key]) {
+    document.getElementById(nodeId[key])?.classList.add('active');
+  }
+
+  // Scroll info panel into view on mobile
+  if (window.innerWidth < 800) {
+    document.getElementById('info-panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
+
+function openLink() {
+  if (!currentKey) return;
+  const questions = {
+    user:       '¿Qué es una PWA y cómo se diferencia de una app nativa?',
+    github:     '¿Qué es GitHub Pages y cuáles son sus limitaciones como hosting?',
+    cognito:    '¿Cómo funciona la autenticación con JWT tokens en detalle?',
+    lambda:     '¿Qué significa serverless y cuándo conviene usarlo?',
+    dynamo:     '¿Cuál es la diferencia entre una base de datos SQL y NoSQL como DynamoDB?',
+    tables:     '¿Cómo funciona la partition key y sort key en DynamoDB?',
+    jenkins:    '¿Qué es CI/CD y cómo se configura un pipeline en Jenkins?',
+    cloudwatch: '¿Cómo se monitorea y debuggea una función Lambda con CloudWatch?'
+  };
+  alert('Pregunta sugerida para Claude:\n\n"' + (questions[currentKey] || '') + '"');
+}
+</script>
+</body>
+</html>
