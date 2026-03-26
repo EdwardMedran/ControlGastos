@@ -173,6 +173,7 @@
     .cat-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; }
     .cat-hormiga     { background: rgba(255,126,179,0.15); color: #ff7eb3; }
     .cat-combustible { background: rgba(255,209,102,0.15); color: #ffd166; }
+    .cat-movilidad   { background: rgba(56,189,248,0.15);  color: #38bdf8; }
     .cat-salidas     { background: rgba(93,228,192,0.15);  color: #5de4c0; }
     .cat-comida      { background: rgba(251,146,60,0.15);  color: #fb923c; }
     .cat-fijos       { background: rgba(255,107,107,0.15); color: #ff6b6b; }
@@ -476,6 +477,7 @@
               <option value="" disabled selected>Seleccionar categoría</option>
               <option value="hormiga">🐜 Gastos Hormiga</option>
               <option value="combustible">⛽ Combustible</option>
+              <option value="movilidad">🚌 Movilidad</option>
               <option value="salidas">🎉 Salidas</option>
               <option value="comida">🍽️ Comida</option>
               <option value="fijos">🏠 Gastos Fijos</option>
@@ -564,6 +566,7 @@
             <option value="">Todas</option>
             <option value="hormiga">🐜 Gastos Hormiga</option>
             <option value="combustible">⛽ Combustible</option>
+            <option value="movilidad">🚌 Movilidad</option>
             <option value="salidas">🎉 Salidas</option>
             <option value="comida">🍽️ Comida</option>
             <option value="fijos">🏠 Gastos Fijos</option>
@@ -898,6 +901,7 @@
           <select id="edit-categoria">
             <option value="hormiga">🐜 Gastos Hormiga</option>
             <option value="combustible">⛽ Combustible</option>
+            <option value="movilidad">🚌 Movilidad</option>
             <option value="salidas">🎉 Salidas</option>
             <option value="comida">🍽️ Comida</option>
             <option value="fijos">🏠 Gastos Fijos</option>
@@ -993,6 +997,7 @@ const CFG = {
 const CAT = {
   hormiga:     { e:'🐜', l:'Gastos Hormiga', c:'cat-hormiga'     },
   combustible: { e:'⛽', l:'Combustible',     c:'cat-combustible' },
+  movilidad:   { e:'🚌', l:'Movilidad',       c:'cat-movilidad'   },
   salidas:     { e:'🎉', l:'Salidas',         c:'cat-salidas'     },
   comida:      { e:'🍽️', l:'Comida',          c:'cat-comida'      },
   fijos:       { e:'🏠', l:'Gastos Fijos',    c:'cat-fijos'       },
@@ -1342,7 +1347,7 @@ async function cargarResumen() {
 let estMes = hoy().substring(0,7);
 
 const CAT_COLORS = {
-  hormiga: '#ff7eb3', combustible: '#ffd166', salidas: '#5de4c0',
+  hormiga: '#ff7eb3', combustible: '#ffd166', movilidad: '#38bdf8', salidas: '#5de4c0',
   comida: '#fb923c', fijos: '#f43f5e', estudios: '#38bdf8',
   inversion: '#4ade80', otros: '#94a3b8', carrito: '#fb7185', tarjeta: '#818cf8'
 };
