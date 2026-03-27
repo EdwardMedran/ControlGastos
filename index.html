@@ -278,67 +278,460 @@
     #toast.error   { border-color: rgba(244,63,94,0.3); }
 
     @media (max-width: 600px) {
-      /* AUTH SCREENS — centrado vertical */
+      /* AUTH SCREENS */
       .screen { padding: 20px 16px; align-items: center; }
-      .auth-card { padding: 28px 22px 32px; border-radius: 20px; max-width: 100%; }
+      .auth-card { padding: 28px 20px 32px; border-radius: 20px; max-width: 100%; }
       .auth-title { font-size: 24px; }
-      .auth-sub { margin-bottom: 20px; }
+      .auth-sub { font-size: 13px; margin-bottom: 20px; }
       .brand { margin-bottom: 20px; }
 
-      /* INPUTS MÁS GRANDES PARA TOUCH */
-      .field input, .field select, .field textarea { font-size: 16px !important; padding: 15px 16px; }
-      .field { margin-bottom: 16px; }
+      /* INPUTS TOUCH-FRIENDLY — mínimo 16px para no hacer zoom en iOS */
+      .field input, .field select, .field textarea { font-size: 16px !important; padding: 14px 14px; }
+      .field { margin-bottom: 14px; }
+      .field label { font-size: 11px; }
       .amount-wrap input { font-size: 22px !important; }
+      .amount-wrap .currency { font-size: 15px; }
 
       /* NAV */
-      .nav { padding: 0 16px; }
+      .nav { padding: 0 14px; height: 52px; }
+      .nav-brand h2 { font-size: 16px; }
       .nav-user span { display: none; }
-      /* HAMBURGER MENU ancho completo en móvil */
+      .nav-avatar { width: 28px; height: 28px; font-size: 11px; }
       .hamburger-menu { width: 100%; border-radius: 0 0 16px 16px; right: 0; left: 0; }
+      .hmenu-item { padding: 13px 14px; font-size: 15px; }
 
       /* MAIN */
-      .main { padding: 16px 16px 32px; }
-      .page-header { margin-bottom: 20px; }
-      .page-header h1 { font-size: 26px; }
-      .page-header p { font-size: 13px; }
-
-      /* RESUMEN — apilado en móvil para que se vea completo */
-      .resumen-grid { grid-template-columns: 1fr 1fr; gap: 10px; overflow-x: unset; padding-bottom: 0; margin-bottom: 20px; }
-      .resumen-card { padding: 14px 14px; min-width: unset; }
-      .rc-value { font-size: 18px; }
-      .rc-label { font-size: 10px; }
-      /* La tercera tarjeta ocupa el ancho completo */
-      .resumen-card:nth-child(3) { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-      .resumen-card:nth-child(3) .rc-value { font-size: 16px; white-space: normal; overflow: visible; flex: 1; }
-      .resumen-card:nth-child(3) .rc-sub { margin-top: 0; font-size: 15px; font-weight: 700; color: var(--text); white-space: nowrap; flex-shrink: 0; }
+      .main { padding: 14px 14px 40px; }
+      .page-header { margin-bottom: 18px; }
+      .page-header h1 { font-size: 24px; letter-spacing: -0.5px; }
+      .page-header p { font-size: 12px; }
 
       /* FORM */
-      .form-card { padding: 20px 16px; border-radius: 16px; }
+      .form-card { padding: 18px 14px; border-radius: 16px; }
       .grid-2 { grid-template-columns: 1fr; gap: 0; }
+      .section-title { font-size: 10px; margin-bottom: 16px; }
 
-      /* MÉTODO DE PAGO — scroll horizontal */
-      .pay-toggle { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; gap: 8px; }
+      /* MÉTODO DE PAGO */
+      .pay-toggle { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 6px; scrollbar-width: none; gap: 8px; -webkit-overflow-scrolling: touch; }
       .pay-toggle::-webkit-scrollbar { display: none; }
-      .pay-label { white-space: nowrap; flex-shrink: 0; padding: 10px 14px; font-size: 13px; }
+      .pay-label { white-space: nowrap; flex-shrink: 0; padding: 11px 14px; font-size: 13px; min-height: 44px; display: flex; align-items: center; }
 
-      /* BOTONES */
-      .submit-area { flex-direction: column-reverse; gap: 10px; margin-top: 24px; padding-top: 20px; }
-      .btn-submit { width: 100%; justify-content: center; padding: 16px; font-size: 16px; }
-      .btn-clear { width: 100%; justify-content: center; text-align: center; padding: 14px; }
+      /* BOTONES — mínimo 48px para touch */
+      .submit-area { flex-direction: column-reverse; gap: 10px; margin-top: 20px; padding-top: 18px; }
+      .btn-submit { width: 100%; justify-content: center; padding: 16px; font-size: 15px; min-height: 52px; }
+      .btn-clear { width: 100%; justify-content: center; text-align: center; padding: 14px; min-height: 48px; }
+      .btn-primary { min-height: 52px; font-size: 15px; }
 
       /* LISTA GASTOS */
-      .recent-header { margin: 28px 0 14px; }
-      .expense-item { padding: 14px 16px; gap: 12px; }
-      .expense-cat-dot { width: 40px; height: 40px; font-size: 18px; }
-      .expense-amount { font-size: 16px; }
-      .expense-title { font-size: 14px; }
+      .recent-header { margin: 22px 0 12px; }
+      .recent-header h2 { font-size: 17px; }
+      .expense-item { padding: 12px 14px; gap: 12px; border-radius: 14px; }
+      .expense-cat-dot { width: 38px; height: 38px; font-size: 17px; border-radius: 10px; }
+      .expense-amount { font-size: 15px; }
+      .expense-title { font-size: 13px; }
+      .expense-date { font-size: 11px; }
+      .cat-pill { font-size: 11px; padding: 3px 9px; }
 
-      /* ESTADÍSTICAS MÓVIL */
-      .est-kpis { grid-template-columns: 1fr 1fr; }
-      .est-bar-label { min-width: 90px; font-size: 12px; }
-      .est-bar-val { min-width: 54px; font-size: 12px; }
-      #toast { left: 16px; right: 16px; bottom: 90px; max-width: 100%; }
+      /* MODAL */
+      .modal-body { padding: 16px 16px 8px; }
+      .modal-actions { padding: 10px 14px; gap: 8px; }
+      .modal-title { font-size: 17px; }
+      .modal-actions .btn-submit,
+      .modal-actions .btn-clear { padding: 13px 8px; font-size: 13px; min-height: 48px; }
+
+      /* ESTADÍSTICAS */
+      .est-kpis { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .est-kpi-card { padding: 14px 14px; }
+      .est-bar-label { min-width: 86px; font-size: 12px; }
+      .est-bar-val { min-width: 52px; font-size: 12px; }
+      .est-bar-row { gap: 8px; margin-bottom: 12px; }
+
+      /* PRÉSTAMOS Y AHORROS */
+      .prestamo-item, .ahorro-item { padding: 12px 14px; gap: 10px; border-radius: 14px; }
+      .prestamo-icon, .ahorro-icon { width: 38px; height: 38px; font-size: 16px; border-radius: 10px; }
+      .prestamo-nombre { font-size: 14px; }
+      .prestamo-monto, .ahorro-monto { font-size: 15px; }
+      .total-ahorro-valor { font-size: 30px; }
+      .modulo-tab { padding: 10px 8px; font-size: 12px; }
+      .resumen-prestamos { gap: 10px; }
+      .rp-value { font-size: 18px; }
+
+      /* INGRESOS */
+      .ingreso-item { padding: 12px 14px; gap: 10px; border-radius: 14px; }
+      .ingreso-icon { width: 38px; height: 38px; font-size: 16px; }
+      .ingreso-titulo { font-size: 14px; }
+      .ingreso-monto { font-size: 15px; }
+
+      /* BARRA PROGRESO */
+      .barra-wrap { margin-bottom: 14px; }
+      .barra-header { gap: 6px; }
+      .barra-nums { font-size: 12px; }
+
+      /* DASHBOARD MÓVIL */
+      .dash-greeting { margin-bottom: 20px; }
+      .dash-greeting-name { font-size: 24px; }
+      .dash-hero { padding: 18px 16px 18px; border-radius: 20px; margin-bottom: 12px; }
+      .dash-hero-top { gap: 16px; }
+      .dash-ring-wrap { width: 88px; height: 88px; }
+      .dash-ring-svg  { width: 88px; height: 88px; }
+      .dash-ring-num  { font-size: 15px; }
+      .dash-ring-lbl  { font-size: 8px; }
+      .dash-total-amount { font-size: clamp(24px, 8vw, 36px); letter-spacing: -1px; }
+      .dash-total-label { font-size: 10px; }
+      .dash-total-diff { font-size: 10px; padding: 2px 7px; }
+      .dash-stats { gap: 10px; margin-bottom: 12px; }
+      .dash-stat { padding: 14px 14px; border-radius: 14px; }
+      .dash-stat-icon { font-size: 20px; margin-bottom: 6px; }
+      .dash-stat-value { font-size: 18px; }
+      .dash-recent-item { padding: 12px 14px; border-radius: 12px; gap: 10px; margin-bottom: 7px; }
+      .dash-recent-dot { width: 36px; height: 36px; font-size: 16px; border-radius: 10px; }
+      .dash-recent-name { font-size: 13px; }
+      .dash-recent-amt { font-size: 14px; }
+      .dash-divider { margin: 18px 0; }
+
+      /* TOAST */
+      #toast { left: 12px; right: 12px; bottom: 16px; max-width: 100%; font-size: 13px; padding: 13px 16px; }
+
+      /* CHAR COUNTER */
+      .char-counter { font-size: 10px; }
     }
+
+    /* ═══════════════════════════════════════════
+       DASHBOARD PREMIUM
+    ═══════════════════════════════════════════ */
+    .dash-wrap { animation: dashIn 0.5s cubic-bezier(0.22,1,0.36,1) both; }
+    @keyframes dashIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+
+    /* SALUDO */
+    .dash-greeting { margin-bottom: 28px; }
+    .dash-greeting-time { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-weight: 600; }
+    .dash-greeting-name { font-family: var(--font-display); font-size: 28px; font-weight: 800; letter-spacing: -0.5px; color: var(--text); }
+    .dash-greeting-sub  { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+    /* HERO CARD — anillo + total */
+    .dash-hero {
+      position: relative;
+      background: linear-gradient(135deg, #1a1f35 0%, #0f1117 100%);
+      border: 1px solid rgba(249,115,22,0.2);
+      border-radius: 24px;
+      padding: 28px 24px 24px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .dash-hero::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(249,115,22,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .dash-hero-top { display: flex; align-items: center; gap: 24px; }
+    .dash-ring-wrap { flex-shrink: 0; position: relative; width: 110px; height: 110px; }
+    .dash-ring-svg { width: 110px; height: 110px; transform: rotate(-90deg); }
+    .dash-ring-bg   { fill: none; stroke: rgba(255,255,255,0.06); stroke-width: 8; }
+    .dash-ring-fill { fill: none; stroke-width: 8; stroke-linecap: round;
+      transition: stroke-dashoffset 1.2s cubic-bezier(0.22,1,0.36,1), stroke 0.5s; }
+    .dash-ring-pct {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .dash-ring-num  { font-family: var(--font-display); font-size: 18px; font-weight: 800; color: var(--text); line-height: 1; }
+    .dash-ring-lbl  { font-size: 9px; color: var(--muted); letter-spacing: 0.5px; margin-top: 2px; }
+
+    .dash-total-wrap { flex: 1; min-width: 0; }
+    .dash-total-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+    .dash-total-amount {
+      font-family: var(--font-display); font-weight: 800; letter-spacing: -1.5px;
+      color: var(--text); line-height: 1;
+      font-size: clamp(28px, 7vw, 40px);
+    }
+    .dash-total-amount .dash-currency { font-size: 0.5em; color: var(--accent); vertical-align: middle; font-weight: 700; }
+    .dash-total-sub  { font-size: 12px; color: var(--muted); margin-top: 6px; }
+    .dash-total-diff { display: inline-flex; align-items: center; gap: 4px;
+      font-size: 11px; font-weight: 600; padding: 2px 8px;
+      border-radius: 20px; margin-top: 6px; }
+    .dash-total-diff.over  { background: rgba(244,63,94,0.15); color: #f43f5e; }
+    .dash-total-diff.safe  { background: rgba(34,197,94,0.12);  color: #22c55e; }
+    .dash-total-diff.warn  { background: rgba(250,204,21,0.12); color: #facc15; }
+
+    .dash-hero-bar { margin-top: 20px; }
+    .dash-hero-bar-track { height: 6px; background: rgba(255,255,255,0.07); border-radius: 3px; overflow: hidden; }
+    .dash-hero-bar-fill  { height: 100%; border-radius: 3px;
+      transition: width 1.2s cubic-bezier(0.22,1,0.36,1), background 0.5s; }
+    .dash-hero-bar-labels { display: flex; justify-content: space-between; margin-top: 6px; font-size: 11px; color: var(--muted); }
+
+    /* MINI STATS ROW */
+    .dash-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    .dash-stat {
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 16px 18px;
+      animation: dashIn 0.5s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .dash-stat:nth-child(1) { animation-delay: 0.05s; }
+    .dash-stat:nth-child(2) { animation-delay: 0.10s; }
+    .dash-stat-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
+    .dash-stat-value { font-family: var(--font-display); font-size: 20px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dash-stat-sub   { font-size: 11px; color: var(--muted); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dash-stat-icon  { font-size: 22px; margin-bottom: 8px; }
+
+    /* RECENT GASTOS */
+    .dash-recent-title { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+    .dash-recent-title a { font-size: 12px; color: var(--accent); font-weight: 500; cursor: pointer; font-family: var(--font-body); text-decoration: none; }
+    .dash-recent-item {
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 8px;
+      animation: dashIn 0.4s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .dash-recent-item:nth-child(1) { animation-delay: 0.12s; }
+    .dash-recent-item:nth-child(2) { animation-delay: 0.18s; }
+    .dash-recent-item:nth-child(3) { animation-delay: 0.24s; }
+    .dash-recent-dot  { width: 40px; height: 40px; border-radius: 12px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+    .dash-recent-info { flex: 1; min-width: 0; }
+    .dash-recent-name { font-size: 14px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .dash-recent-meta { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .dash-recent-amt  { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--text); flex-shrink: 0; }
+
+    /* DIVIDER */
+    .dash-divider { height: 1px; background: var(--border); margin: 24px 0; }
+
+    @media (max-width: 600px) {
+      .dash-hero { padding: 22px 18px 20px; }
+      .dash-ring-wrap { width: 90px; height: 90px; }
+      .dash-ring-svg  { width: 90px; height: 90px; }
+      .dash-ring-num  { font-size: 15px; }
+      .dash-total-amount { font-size: clamp(26px, 8vw, 38px); }
+    }
+
+
+    /* ═══════════════════════════════════════════
+       LIGHT MODE
+    ═══════════════════════════════════════════ */
+    body.light {
+      --bg:           #fdf6f0;
+      --surface:      rgba(255,255,255,0.85);
+      --surface2:     rgba(255,243,230,0.7);
+      --border:       rgba(249,115,22,0.12);
+      --border-hover: rgba(249,115,22,0.25);
+      --text:         #1a1310;
+      --muted:        #7a6a5a;
+      --accent:       #ea6c0a;
+      --accent2:      #c45e00;
+      --accent3:      #0284c7;
+      --danger:       #dc2626;
+      --success:      #16a34a;
+    }
+
+    /* Fondo degradado cálido — NO blanco puro */
+    body.light {
+      background:
+        linear-gradient(160deg, #fff7ee 0%, #fdeedd 35%, #f5f0ff 70%, #eef6ff 100%);
+      background-attachment: fixed;
+    }
+    body.light::before {
+      background:
+        radial-gradient(ellipse 60% 50% at 10% 0%,   rgba(249,115,22,0.13) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 45% at 90% 100%,  rgba(99,102,241,0.08) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 35% at 50%  50%,  rgba(250,204,21,0.05) 0%, transparent 60%);
+    }
+
+    /* NAV con cristal cálido */
+    body.light .nav {
+      background: rgba(255,248,240,0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(249,115,22,0.12);
+    }
+
+    /* Cards con vidrio suave */
+    body.light .form-card,
+    body.light .resumen-card,
+    body.light .est-kpi-card,
+    body.light .rp-card {
+      background: rgba(255,255,255,0.80);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(249,115,22,0.1);
+      box-shadow: 0 4px 20px rgba(249,115,22,0.06), 0 1px 4px rgba(0,0,0,0.04);
+    }
+
+    /* Inputs */
+    body.light .field input,
+    body.light .field select,
+    body.light .field textarea {
+      background: rgba(255,255,255,0.9);
+      border-color: rgba(249,115,22,0.15);
+      color: var(--text);
+    }
+    body.light .field input:focus,
+    body.light .field select:focus,
+    body.light .field textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(249,115,22,0.1);
+    }
+    body.light .field select option { background: #fff7ee; color: #1a1310; }
+
+    /* Auth card */
+    body.light .auth-card {
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 24px 64px rgba(249,115,22,0.1), 0 0 0 1px rgba(249,115,22,0.1);
+    }
+
+    /* Dashboard hero */
+    body.light .dash-hero {
+      background: linear-gradient(135deg,
+        rgba(255,247,237,0.95) 0%,
+        rgba(255,237,213,0.85) 50%,
+        rgba(255,251,235,0.9)  100%);
+      border-color: rgba(249,115,22,0.18);
+      box-shadow: 0 8px 32px rgba(249,115,22,0.08);
+    }
+    body.light .dash-hero::before {
+      background: radial-gradient(circle, rgba(249,115,22,0.1) 0%, transparent 65%);
+    }
+    body.light .dash-hero-bar-track { background: rgba(249,115,22,0.1); }
+    body.light .dash-ring-bg { stroke: rgba(249,115,22,0.1); }
+
+    /* Dash stats y recientes */
+    body.light .dash-stat,
+    body.light .dash-recent-item {
+      background: rgba(255,255,255,0.78);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-color: rgba(249,115,22,0.09);
+      box-shadow: 0 2px 12px rgba(249,115,22,0.05);
+    }
+    body.light .dash-recent-dot { background: rgba(249,115,22,0.08); }
+
+    /* Items de lista */
+    body.light .expense-item,
+    body.light .ingreso-item,
+    body.light .prestamo-item,
+    body.light .ahorro-item {
+      background: rgba(255,255,255,0.78);
+      border-color: rgba(249,115,22,0.09);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+    body.light .expense-item:hover {
+      border-color: rgba(249,115,22,0.2);
+      box-shadow: 0 4px 16px rgba(249,115,22,0.08);
+    }
+
+    /* Modales */
+    body.light .modal-overlay { background: rgba(30,15,5,0.4); }
+    body.light .modal-card {
+      background: rgba(255,252,248,0.97);
+      border-color: rgba(249,115,22,0.15);
+    }
+    body.light .modal-actions {
+      background: rgba(255,252,248,0.97);
+      border-top-color: rgba(249,115,22,0.1);
+    }
+
+    /* Hamburger menu */
+    body.light .hamburger-menu {
+      background: rgba(255,252,248,0.97);
+      border-color: rgba(249,115,22,0.12);
+      box-shadow: 0 12px 32px rgba(249,115,22,0.1);
+    }
+
+    /* Ahorros total card */
+    body.light .total-ahorro-card {
+      background: linear-gradient(135deg,
+        rgba(249,115,22,0.1), rgba(250,204,21,0.08));
+      border-color: rgba(249,115,22,0.2);
+    }
+
+    /* Loader */
+    body.light #global-loader {
+      background: linear-gradient(160deg, #fff7ee, #fdeedd);
+    }
+
+    /* Barra track */
+    body.light .barra-track { background: rgba(249,115,22,0.1); }
+
+    /* Page header gradient en light */
+    body.light .page-header h1 {
+      background: linear-gradient(135deg, #1a1310 40%, #ea6c0a);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Resumen cards de préstamos */
+    body.light .resumen-prestamos .rp-card {
+      background: rgba(255,255,255,0.80);
+    }
+
+    /* Pay labels */
+    body.light .pay-label {
+      background: rgba(255,255,255,0.7);
+      border-color: rgba(249,115,22,0.12);
+      color: var(--muted);
+    }
+    body.light .pay-option:checked + .pay-label {
+      background: rgba(249,115,22,0.08);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Section title line */
+    body.light .section-title::after { background: rgba(249,115,22,0.12); }
+
+    /* Divider dash */
+    body.light .dash-divider { background: rgba(249,115,22,0.1); }
+
+    /* ── Mobile específico light ── */
+    @media (max-width: 600px) {
+      body.light {
+        background:
+          linear-gradient(170deg, #fff7ee 0%, #fdeedd 40%, #f3f0ff 75%, #eef6ff 100%);
+      }
+      body.light .nav {
+        background: rgba(255,247,237,0.92);
+      }
+      body.light .form-card { padding: 18px 14px; }
+    }
+
+    /* Toggle button */
+    .theme-toggle {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      width: 34px; height: 34px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.2s;
+      flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .theme-toggle:hover,
+    .theme-toggle:active { border-color: var(--accent); }
+
+    /* ── Transición suave al cambiar tema ── */
+    body, body * {
+      transition:
+        background-color 0.3s ease,
+        border-color 0.3s ease,
+        color 0.15s ease,
+        box-shadow 0.3s ease !important;
+    }
+    /* Excepciones — no animar lo que no debe transicionar */
+    body .spinner,
+    body .barra-fill,
+    body .dash-ring-fill,
+    body .dash-bar-fill,
+    body .est-bar-fill { transition: none !important; }
+
   </style>
 </head>
 <body>
@@ -413,6 +806,7 @@
         <div class="nav-avatar" id="user-avatar">U</div>
         <span id="user-name">Usuario</span>
       </div>
+      <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Cambiar tema" aria-label="Cambiar tema">🌙</button>
       <button class="btn-hamburger" id="btn-hamburger" onclick="toggleMenu()" aria-label="Menú">
         <span></span><span></span><span></span>
       </button>
@@ -456,14 +850,93 @@
 
     <!-- VISTA REGISTRAR -->
     <div id="view-registrar">
-      <div class="page-header"><h1>Gastos</h1><p>Registra un gasto de forma rápida y organizada</p></div>
+      <div class="dash-wrap">
 
-      <div id="barra-registrar" class="barra-wrap form-card" style="padding:16px 20px;margin-bottom:20px"></div>
-      <div class="resumen-grid">
-        <div class="resumen-card"><div class="rc-label">Total del mes</div><div class="rc-value" id="res-total">—</div><div class="rc-sub" id="res-mes">—</div></div>
-        <div class="resumen-card"><div class="rc-label">Cantidad gastos</div><div class="rc-value" id="res-cant">—</div><div class="rc-sub">este mes</div></div>
-        <div class="resumen-card"><div class="rc-label">Mayor categoría</div><div class="rc-value" id="res-top">—</div><div class="rc-sub" id="res-top-monto">—</div></div>
-      </div>
+        <!-- SALUDO -->
+        <div class="dash-greeting">
+          <div class="dash-greeting-time" id="dash-time-label">Buenos días</div>
+          <div class="dash-greeting-name" id="dash-name">—</div>
+          <div class="dash-greeting-sub" id="dash-date-sub">—</div>
+        </div>
+
+        <!-- HERO CARD: anillo + total -->
+        <div class="dash-hero">
+          <div class="dash-hero-top">
+            <!-- Anillo SVG -->
+            <div class="dash-ring-wrap">
+              <svg class="dash-ring-svg" viewBox="0 0 110 110">
+                <circle class="dash-ring-bg"   cx="55" cy="55" r="46"/>
+                <circle class="dash-ring-fill" id="dash-ring-fill" cx="55" cy="55" r="46"
+                  stroke-dasharray="289 289" stroke-dashoffset="289" stroke="#f97316"/>
+              </svg>
+              <div class="dash-ring-pct">
+                <span class="dash-ring-num" id="dash-ring-pct">0%</span>
+                <span class="dash-ring-lbl">usado</span>
+              </div>
+            </div>
+
+            <!-- Total del mes -->
+            <div class="dash-total-wrap">
+              <div class="dash-total-label">Gastos del mes</div>
+              <div class="dash-total-amount">
+                <span class="dash-currency">S/</span><span id="dash-total-num">0.00</span>
+              </div>
+              <div class="dash-total-sub" id="dash-total-mes">—</div>
+              <div class="dash-total-diff" id="dash-ingreso-diff" style="display:none"></div>
+            </div>
+          </div>
+
+          <!-- Barra progreso -->
+          <div class="dash-hero-bar">
+            <div class="dash-hero-bar-track">
+              <div class="dash-hero-bar-fill" id="dash-bar-fill" style="width:0%"></div>
+            </div>
+            <div class="dash-hero-bar-labels">
+              <span>S/ 0</span>
+              <span id="dash-bar-ing-lbl">Sin ingresos</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- MINI STATS -->
+        <div class="dash-stats">
+          <div class="dash-stat">
+            <div class="dash-stat-icon">🧾</div>
+            <div class="dash-stat-label">Cantidad</div>
+            <div class="dash-stat-value" id="dash-cant">—</div>
+            <div class="dash-stat-sub">gastos este mes</div>
+          </div>
+          <div class="dash-stat">
+            <div class="dash-stat-icon" id="dash-top-icon">📦</div>
+            <div class="dash-stat-label">Mayor categoría</div>
+            <div class="dash-stat-value" id="dash-top-cat">—</div>
+            <div class="dash-stat-sub" id="dash-top-monto">—</div>
+          </div>
+        </div>
+
+        <!-- RECENT GASTOS -->
+        <div class="dash-recent-title">
+          Gastos recientes
+          <a onclick="showView('consultar')">Ver todos →</a>
+        </div>
+        <div id="dash-recent-list">
+          <div class="empty-state" style="padding:24px">
+            <div class="empty-icon">📋</div><p>Cargando...</p>
+          </div>
+        </div>
+
+        <div class="dash-divider"></div>
+        <div class="page-header" style="margin-bottom:20px"><h1>Registrar Gasto</h1><p>Añade un nuevo gasto</p></div>
+
+      </div><!-- /dash-wrap -->
+
+      <!-- hidden resumen ids for JS compat -->
+      <span id="res-total" style="display:none"></span>
+      <span id="res-cant"  style="display:none"></span>
+      <span id="res-mes"   style="display:none"></span>
+      <span id="res-top"   style="display:none"></span>
+      <span id="res-top-monto" style="display:none"></span>
+      <div id="barra-registrar" style="display:none"></div>
 
       <div class="form-card">
         <div class="section-title">Información general</div>
@@ -1041,6 +1514,7 @@ const pool = new AmazonCognitoIdentity.CognitoUserPool({ UserPoolId: CFG.POOL_ID
 const SESSION_MAX_MS = 5 * 60 * 1000; // 5 minutos
 
 window.addEventListener("load", () => {
+  initTheme();
   const u = pool.getCurrentUser();
   if (!u) return showScreen("login");
 
@@ -1115,6 +1589,7 @@ function showApp() {
   cargarResumen();
   cargarHoy();
   cargarBarraProgreso();
+  initTheme();
 }
 
 function toggleMenu() {
@@ -1315,6 +1790,22 @@ function stopSessionTimer() {
     document.removeEventListener(ev, resetSessionTimer)
   );
 }
+
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light');
+  localStorage.setItem('cg_theme', isLight ? 'light' : 'dark');
+  document.getElementById('theme-toggle').textContent = isLight ? '☀️' : '🌙';
+}
+
+function initTheme() {
+  const saved = localStorage.getItem('cg_theme');
+  if (saved === 'light') {
+    document.body.classList.add('light');
+    const btn = document.getElementById('theme-toggle');
+    if (btn) btn.textContent = '☀️';
+  }
+}
+
 async function lmb(path, method = "GET", body = null, qs = "") {
   const token = await getToken();
   const url = CFG.LAMBDA_URL + path + (qs ? "?" + qs : "");
@@ -1341,7 +1832,7 @@ async function saveGasto() {
   btn.disabled = true; btn.innerHTML = "⏳ Guardando...";
   try {
     await lmb("/gastos", "POST", { titulo, categoria, monto: parseFloat(montoRaw), fecha, descripcion: g("descripcion"), lugar: g("lugar"), etiqueta: g("etiqueta"), metodoPago: document.querySelector("input[name='pago']:checked")?.value || "efectivo" });
-    clearForm(); toast("¡Gasto guardado en DynamoDB! ✅", "success"); cargarResumen(); cargarHoy();
+    clearForm(); toast("¡Gasto guardado! ✅", "success"); cargarResumen(); cargarHoy();
   } catch(e) { toast("Error: " + e.message, "error"); }
   finally {
     btn.disabled = false;
@@ -1351,20 +1842,149 @@ async function saveGasto() {
 
 async function cargarHoy() {
   const el = document.getElementById("gastos-list");
-  el.innerHTML = skels(3);
-  try { const d = await lmb("/gastos", "GET", null, "fecha=" + hoy()); renderLista(d.gastos || [], el, "recent-count", false); }
-  catch(e) { el.innerHTML = empty("⚠️", e.message); }
+  const dashEl = document.getElementById("dash-recent-list");
+  if (el) { el.innerHTML = skels(3); }
+  if (dashEl) { dashEl.innerHTML = skels(3); }
+  try {
+    const d = await lmb("/gastos", "GET", null, "fecha=" + hoy());
+    const gastos = d.gastos || [];
+    if (el) renderLista(gastos, el, "recent-count", false);
+    // Dashboard: mostrar últimos 3
+    if (dashEl) {
+      if (!gastos.length) {
+        dashEl.innerHTML = `<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">Sin gastos hoy — ¡buen comienzo! 🎉</div>`;
+      } else {
+        const recientes = gastos.slice(0, 3);
+        dashEl.innerHTML = recientes.map(g => {
+          const cat = CAT[g.categoria] || CAT.otros;
+          const monto = parseFloat(g.monto||0).toFixed(2);
+          return `<div class="dash-recent-item">
+            <div class="dash-recent-dot">${cat.e}</div>
+            <div class="dash-recent-info">
+              <div class="dash-recent-name">${esc(g.titulo)}</div>
+              <div class="dash-recent-meta">${cat.l} · ${PAY[g.metodoPago]||'Efectivo'}</div>
+            </div>
+            <div class="dash-recent-amt">S/ ${monto}</div>
+          </div>`;
+        }).join('');
+      }
+    }
+  } catch(e) {
+    if (el) el.innerHTML = empty("⚠️", e.message);
+    if (dashEl) dashEl.innerHTML = empty("⚠️", e.message);
+  }
 }
 
 async function cargarResumen() {
   const mes = hoy().substring(0,7);
   try {
-    const d = await lmb("/gastos/resumen", "GET", null, "mes=" + mes);
-    document.getElementById("res-total").textContent = "S/ " + (d.totalGeneral || 0).toFixed(2);
-    document.getElementById("res-cant").textContent  = d.cantidadGastos || 0;
+    const [resumen, ingresos] = await Promise.all([
+      lmb("/gastos/resumen", "GET", null, "mes=" + mes),
+      lmb("/ingresos", "GET", null, "mes=" + mes)
+    ]);
+
+    const total     = parseFloat(resumen.totalGeneral || 0);
+    const cantidad  = resumen.cantidadGastos || 0;
+    const totalIng  = (ingresos.ingresos || []).reduce((s,i) => s + parseFloat(i.monto||0), 0);
+    const pct       = totalIng > 0 ? Math.min((total / totalIng) * 100, 100) : 0;
+    const circum    = 2 * Math.PI * 46; // r=46
+
+    // ── Saludo personalizado ──
+    const hora = new Date().getHours();
+    const saludo = hora < 12 ? 'Buenos días' : hora < 19 ? 'Buenas tardes' : 'Buenas noches';
+    const diasSemana = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    const ahora = new Date();
+    const nombreUser = document.getElementById("user-name")?.textContent || "—";
+
+    const elTime = document.getElementById("dash-time-label");
+    const elName = document.getElementById("dash-name");
+    const elSub  = document.getElementById("dash-date-sub");
+    if (elTime) elTime.textContent = saludo;
+    if (elName) elName.textContent = nombreUser;
+    if (elSub)  elSub.textContent  = `${diasSemana[ahora.getDay()]}, ${ahora.getDate()} de ${meses[ahora.getMonth()]}`;
+
+    // ── Total animado ──
+    const elTot = document.getElementById("dash-total-num");
+    if (elTot) {
+      let curr = 0;
+      const target = total;
+      const steps = 40;
+      const inc = target / steps;
+      let step = 0;
+      const timer = setInterval(() => {
+        curr = Math.min(curr + inc, target);
+        elTot.textContent = curr.toFixed(2);
+        if (++step >= steps) clearInterval(timer);
+      }, 20);
+    }
+
+    const elMes = document.getElementById("dash-total-mes");
+    if (elMes) elMes.textContent = fmtMes(mes);
+
+    // ── Anillo ──
+    const ring = document.getElementById("dash-ring-fill");
+    const ringPct = document.getElementById("dash-ring-pct");
+    if (ring) {
+      const color = pct < 60 ? '#22c55e' : pct < 85 ? '#facc15' : '#f43f5e';
+      ring.style.stroke = color;
+      setTimeout(() => {
+        ring.style.strokeDashoffset = (circum - (pct / 100) * circum).toFixed(2);
+      }, 100);
+    }
+    if (ringPct) ringPct.textContent = Math.round(pct) + '%';
+
+    // ── Barra ──
+    const bar = document.getElementById("dash-bar-fill");
+    const barLbl = document.getElementById("dash-bar-ing-lbl");
+    if (bar) {
+      const barColor = pct < 60 ? '#22c55e' : pct < 85 ? '#facc15' : '#f43f5e';
+      bar.style.background = barColor;
+      setTimeout(() => { bar.style.width = pct.toFixed(1) + '%'; }, 150);
+    }
+    if (barLbl) barLbl.textContent = totalIng > 0 ? `S/ ${totalIng.toFixed(2)} ingresado` : 'Sin ingresos';
+
+    // ── Diff badge ──
+    const diff = document.getElementById("dash-ingreso-diff");
+    if (diff && totalIng > 0) {
+      const restante = totalIng - total;
+      if (restante < 0) {
+        diff.className = "dash-total-diff over";
+        diff.textContent = `↑ S/ ${Math.abs(restante).toFixed(2)} excedido`;
+      } else if (pct >= 80) {
+        diff.className = "dash-total-diff warn";
+        diff.textContent = `⚠ S/ ${restante.toFixed(2)} disponible`;
+      } else {
+        diff.className = "dash-total-diff safe";
+        diff.textContent = `✓ S/ ${restante.toFixed(2)} disponible`;
+      }
+      diff.style.display = "inline-flex";
+    }
+
+    // ── Mini stats ──
+    const elCant = document.getElementById("dash-cant");
+    if (elCant) elCant.textContent = cantidad;
+
+    const top = Object.entries(resumen.porCategoria || {}).sort((a,b) => b[1].total - a[1].total)[0];
+    if (top) {
+      const cat = CAT[top[0]] || { e:'📦', l: top[0] };
+      const elIcon = document.getElementById("dash-top-icon");
+      const elCat  = document.getElementById("dash-top-cat");
+      const elMnt  = document.getElementById("dash-top-monto");
+      if (elIcon) elIcon.textContent = cat.e;
+      if (elCat)  elCat.textContent  = cat.l;
+      if (elMnt)  elMnt.textContent  = `S/ ${top[1].total.toFixed(2)}`;
+    }
+
+    // compat IDs
+    document.getElementById("res-total").textContent = "S/ " + total.toFixed(2);
+    document.getElementById("res-cant").textContent  = cantidad;
     document.getElementById("res-mes").textContent   = fmtMes(mes);
-    const top = Object.entries(d.porCategoria || {}).sort((a,b) => b[1].total - a[1].total)[0];
-    if (top) { document.getElementById("res-top").textContent = (CAT[top[0]]?.e||"📦")+" "+(CAT[top[0]]?.l||top[0]); document.getElementById("res-top-monto").textContent = "S/ " + top[1].total.toFixed(2); }
+    if (top) {
+      document.getElementById("res-top").textContent = (CAT[top[0]]?.e||"📦")+" "+(CAT[top[0]]?.l||top[0]);
+      document.getElementById("res-top-monto").textContent = "S/ " + top[1].total.toFixed(2);
+    }
+
   } catch(e) { console.warn("Resumen:", e.message); }
 }
 
