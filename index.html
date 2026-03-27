@@ -587,6 +587,16 @@
           </select>
           </div>
         </div>
+        <div class="field">
+          <label>Método de pago</label>
+          <select id="filtro-pago" onchange="consultarGastos()">
+            <option value="">Todos los métodos</option>
+            <option value="efectivo">💵 Efectivo</option>
+            <option value="tarjeta_debito">💳 Débito</option>
+            <option value="tarjeta_credito">🏦 Crédito</option>
+            <option value="yape_plin">📱 Yape/Plin</option>
+          </select>
+        </div>
       </div>
       <div id="consulta-resumen" style="margin-bottom:20px"></div>
       <div id="consulta-list"><div class="empty-state"><div class="empty-icon">🔍</div><p>Selecciona un mes o día para consultar.</p></div></div>
@@ -1134,7 +1144,7 @@ function showView(v) {
   const navMap = { registrar:"nav-reg", consultar:"nav-con", estadisticas:"nav-est", prestamos:"nav-pre", ahorros:"nav-aho", ingresos:"nav-ing" };
   Object.values(navMap).forEach(id => document.getElementById(id)?.classList.remove("active"));
   document.getElementById(navMap[v])?.classList.add("active");
-  if (v === "consultar")    { document.getElementById("filtro-mes").value = hoy().substring(0,7); document.getElementById("filtro-dia").value = ""; document.getElementById("filtro-semana").value = ""; poblarSemanas(hoy().substring(0,7)); consultarGastos(); }
+  if (v === "consultar")    { document.getElementById("filtro-mes").value = hoy().substring(0,7); document.getElementById("filtro-dia").value = ""; document.getElementById("filtro-semana").value = ""; document.getElementById("filtro-pago").value = ""; poblarSemanas(hoy().substring(0,7)); consultarGastos(); }
   if (v === "estadisticas") cargarEstadisticas();
   if (v === "prestamos")    cargarPrestamos();
   if (v === "ahorros")      cargarAhorros();
@@ -1920,6 +1930,7 @@ function onFiltroMesChange() {
   const mes = document.getElementById("filtro-mes").value;
   document.getElementById("filtro-dia").value = "";
   document.getElementById("filtro-semana").value = "";
+  document.getElementById("filtro-pago").value = "";
   if (mes) poblarSemanas(mes);
   consultarGastos();
 }
@@ -1976,6 +1987,7 @@ async function consultarGastos() {
   const dia    = document.getElementById("filtro-dia").value;
   const semana = document.getElementById("filtro-semana").value;
   const cat    = document.getElementById("filtro-cat").value;
+  const pago   = document.getElementById("filtro-pago").value;
   if (!mes && !dia) return;
   const listEl = document.getElementById("consulta-list"), resEl = document.getElementById("consulta-resumen");
   listEl.innerHTML = skels(5);
@@ -2010,6 +2022,14 @@ async function consultarGastos() {
       // Formatear período semana
       const fmt = dt => { const[y,m,d]=dt.toISOString().slice(0,10).split("-"); const ms=["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"]; return `${parseInt(d)} ${ms[parseInt(m)-1]}`; };
       periodo = `Semana del ${fmt(inicio)} al ${fmt(fin)}`;
+    }
+
+    // Filtrar por método de pago (frontend)
+    if (pago) {
+      const pagoLabel = { efectivo:'💵 Efectivo', tarjeta_debito:'💳 Débito', tarjeta_credito:'🏦 Crédito', yape_plin:'📱 Yape/Plin' };
+      gastos = gastos.filter(g => (g.metodoPago || "efectivo") === pago);
+      const etiq = pagoLabel[pago] || pago;
+      periodo = periodo ? `${periodo} · ${etiq}` : etiq;
     }
 
     const total = gastos.reduce((s,g) => s + parseFloat(g.monto||0), 0);
